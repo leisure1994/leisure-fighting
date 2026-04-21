@@ -60,11 +60,11 @@ skillhub install dining-assistant-skill
 
 ---
 
-## 💰 赞助我们
+## 💰 赞助支持
 
-如果你喜欢这些工具，可以通过 GitHub Sponsors 支持我们：
+如果我的内容/项目对你有帮助，欢迎通过爱发电赞助我，你的支持是我持续创作的最大动力！
 
-👉 [成为赞助者](https://github.com/sponsors/leisure1994)
+👉 [点击前往我的赞助主页](https://afdian.net/a/leisure1994)
 
 所有赞助将用于：
 - 持续开发更多实用 Skills
