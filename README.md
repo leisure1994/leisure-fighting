@@ -1,82 +1,52 @@
 # 🎯 Leisure Fighting - AI Skills 军火库
 
-> 一人公司，AI 武装。这里是可落地的 AI 生产力武器。
+> 一人公司，AI 武装。44 个开源 Agent 技能，即装即用。
 
-## 📦 可用 Skills（18 个）
+[![Skills](https://img.shields.io/badge/Skills-44-green)](https://github.com/leisure1994)
+[![License](https://img.shields.io/badge/License-MIT-blue)](./LICENSE)
+[![Sponsor](https://img.shields.io/badge/赞助-爱发电-ff69b4)](https://ifdian.net/a/leisure1994)
 
-### 🔥 核心产品
+---
 
-| Skill | 功能 | 代码量 | 状态 |
-|---|---|---|---|
-| **dining-assistant-skill** | 用餐助手 - 餐厅/顾客双模式 Agent，排队、点菜、桌号管理 | 3624 行 Python | ✅ 完整 |
-| **tao-world-engine** | 天道引擎 - LLM 驱动游戏世界推衍，NPC Agent 社会模拟 | Lua + 全套文档 | ✅ 完整 |
-| **nuclear-survival-globe** | 核战争城市自救地球仪 - 337 城地下避难所可视化 + 生存指南 | 完整 Web 应用 | ✅ 完整 |
+## 🔥 核心产品（5 个）
 
-### 📊 数据与办公
+| 技能 | 一句话描述 | 安装 |
+|------|-----------|------|
+| **dining-assistant-skill** | 餐厅↔顾客双模式用餐助手，QR 握手、排号、桌号、云端记忆 | `clawhub install dining-assistant-skill` |
+| **tao-world-engine** | LLM 驱动世界推衍引擎，NPC Agent 社会模拟 + 多 API 智能路由 | `clawhub install tao-world-engine` |
+| **novel-flow-skill** | 小说创作全流程，世界观 + 角色 + 剧情 + 记忆宫殿 | `clawhub install novel-flow-skill` |
+| **wenquxing-skill** | 文曲星写作助手，文风分析与句子重构 | `clawhub install wenquxing-skill` |
+| **nuclear-survival-globe** | 核战争城市自救地球仪，337 城地下避难所可视化 | [在线访问](https://a-art.top/workshop/nuclear-survival-globe/) |
 
-| Skill | 功能 | 状态 |
-|---|---|---|
-| **feishu-report-assistant** | 飞书智能报表 - 自动拉取多维表格数据、生成报表、定时推送 | ✅ 完整 |
-| **wecom-bot-suite** | 企业微信机器人套件 - 自动回复 + 定时推送 | ✅ 完整 |
-| **ai-content-factory** | AI 内容生成工厂 - MiniMax TTS + Seedance 视频批量生产 | ✅ 完整 |
+## 🏪 双模式行业 Agent（15 个）
 
-### 🎯 小红书运营
+医疗陪诊 · 宠物管家 · 酒店民宿 · 银发伴侣 · 教培管家 · 健身私教 · 美容美发 · 汽车管家 · 家政调度 · 影像工坊 · 物业管家 · 装修监理 · 快递驿站 · 法律助理 · API 契约验证
 
-| Skill | 功能 |
-|---|---|
-| **xiaohongshu-writer-expert** | 小红书文案专家 |
-| **xhs-suggest-keywords** | 关键词建议 |
-| **xhs-full-operation-workflow** | 全栈运营工作流 |
-| **xiaohongshu-tool** | 工具集 |
+> 每个都含 QR 握手 + 记忆系统，餐厅模式 / 顾客模式一键切换。
 
-### 🛠️ 通用工具
+## 🛠️ 基础组件（24 个）
 
-| Skill | 功能 |
-|---|---|
-| **humanizer** | 去 AI 痕迹 |
-| **evolver** | 内容进化 |
-| **xmind** | XMind 思维导图生成 |
-| **find-skills** | 技能发现 |
-| **kimiim** | Kimi IM 工具 |
-| **time-awareness** | 时间感知 |
-| **worker-safety** | 工作安全 |
+**LLM 接入**：doubao-connector · llm-router · multi-llm-judge · minimax-api · seedance2-api  
+**数据格式**：json-fixer · markdown-formatter · diff-merger · case-converter · encoding-toolbox · schema-converter · semantic-search  
+**安全隐私**：text-desensitizer · prompt-guard · api-contract-validator  
+**系统工具**：universal-memory · event-sourcing · token-optimizer · cron-builder · hash-generator · fake-data-generator · timezone-coordinator · universal-qr · webhook-router · task-autopilot · context-summarizer  
+**开发 SDK**：agent-handshake-sdk · worldbuilding-engine · character-manager · tao-world-engine-skill
 
 ---
 
 ## 🚀 快速开始
 
 ```bash
-# 克隆仓库
-git clone https://github.com/leisure1994/leisure-fighting.git
-cd leisure-fighting
+# 安装 ClawHub CLI
+npm install -g clawhub
 
-# 安装 SkillHub CLI
-curl -fsSL https://get.skillhub.sh | sh
-
-# 安装技能（示例）
-skillhub install xiaohongshu-writer-expert
-skillhub install dining-assistant-skill
+# 安装任意技能
+clawhub install dining-assistant-skill
+clawhub install doubao-connector-skill
+clawhub install json-fixer-skill
 ```
 
----
+## 💖 赞助
 
-## 💰 赞助支持
-
-如果我的内容/项目对你有帮助，欢迎通过爱发电赞助我，你的支持是我持续创作的最大动力！
-
-👉 [点击前往我的赞助主页](https://ifdian.net/a/leisure1994)
-
-所有赞助将用于：
-- 持续开发更多实用 Skills
-- 维护和改进现有工具
-- 构建更强大的 AI 生产力生态
-
----
-
-## 📜 许可证
-
-MIT License - 自由使用，欢迎贡献。
-
----
-
-> **"Day one. Begin recording everything about this one."** 🔥
+如果喜欢这些工具，请支持我继续开发：  
+**[爱发电](https://ifdian.net/a/leisure1994)**
