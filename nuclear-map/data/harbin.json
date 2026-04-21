@@ -1,0 +1,71 @@
+{
+  "city": "哈尔滨",
+  "shelters": [
+    {
+      "id": "hrb_001",
+      "name": "哈尔滨火车站人防工程",
+      "address": "哈尔滨市南岗区铁路街1号",
+      "district": "南岗区",
+      "type": "人防工程",
+      "coordinates": [126.630, 45.760],
+      "map_search": "哈尔滨站地下广场",
+      "capacity": 5000,
+      "status": "active"
+    },
+    {
+      "id": "hrb_002",
+      "name": "中央大街人防工程",
+      "address": "哈尔滨市道里区中央大街",
+      "district": "道里区",
+      "type": "人防工程",
+      "coordinates": [126.648, 45.780],
+      "map_search": "中央大街地下商业街",
+      "capacity": 3000,
+      "status": "active"
+    },
+    {
+      "id": "hrb_003",
+      "name": "索菲亚教堂人防工程",
+      "address": "哈尔滨市道里区透笼街88号",
+      "district": "道里区",
+      "type": "人防工程",
+      "coordinates": [126.645, 45.772],
+      "map_search": "索菲亚教堂地下停车场",
+      "capacity": 2000,
+      "status": "active"
+    },
+    {
+      "id": "hrb_004",
+      "name": "防洪纪念塔人防工程",
+      "address": "哈尔滨市道里区中央大街尽头",
+      "district": "道里区",
+      "type": "防空洞",
+      "coordinates": [126.653, 45.803],
+      "map_search": "防洪胜利纪念塔地下",
+      "capacity": 2500,
+      "status": "active"
+    },
+    {
+      "id": "hrb_005",
+      "name": "南岗秋林商圈人防工程",
+      "address": "哈尔滨市南岗区东大直街",
+      "district": "南岗区",
+      "type": "人防工程",
+      "coordinates": [126.652, 45.755],
+      "map_search": "秋林国际购物中心地下",
+      "capacity": 3500,
+      "status": "active"
+    },
+    {
+      "id": "hrb_006",
+      "name": "太平国际机场人防工程",
+      "address": "哈尔滨市道里区太平国际机场",
+      "district": "道里区",
+      "type": "人防工程",
+      "coordinates": [126.250, 45.623],
+      "map_search": "哈尔滨太平国际机场",
+      "capacity": 4000,
+      "status": "active"
+    }
+  ]
+}

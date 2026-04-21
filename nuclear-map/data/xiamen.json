@@ -1,0 +1,71 @@
+{
+  "city": "厦门",
+  "shelters": [
+    {
+      "id": "xm_001",
+      "name": "厦门火车站人防工程",
+      "address": "厦门市思明区厦禾路",
+      "district": "思明区",
+      "type": "人防工程",
+      "coordinates": [118.115, 24.462],
+      "map_search": "厦门站地下广场",
+      "capacity": 4000,
+      "status": "active"
+    },
+    {
+      "id": "xm_002",
+      "name": "鸿山人防隧道",
+      "address": "厦门市思明区思明南路",
+      "district": "思明区",
+      "type": "防空洞",
+      "coordinates": [118.085, 24.442],
+      "map_search": "鸿山人防隧道",
+      "capacity": 3500,
+      "status": "active"
+    },
+    {
+      "id": "xm_003",
+      "name": "中山路步行街人防工程",
+      "address": "厦门市思明区中山路",
+      "district": "思明区",
+      "type": "人防工程",
+      "coordinates": [118.080, 24.445],
+      "map_search": "中山路步行街地下",
+      "capacity": 3000,
+      "status": "active"
+    },
+    {
+      "id": "xm_004",
+      "name": "鼓浪屿英雄山人防工程",
+      "address": "厦门市鼓浪屿英雄山",
+      "district": "鼓浪屿",
+      "type": "防空洞",
+      "coordinates": [118.060, 24.455],
+      "map_search": "鼓浪屿贝壳博物馆防空洞",
+      "capacity": 2000,
+      "status": "active"
+    },
+    {
+      "id": "xm_005",
+      "name": "厦门大学芙蓉隧道人防工程",
+      "address": "厦门市思明区厦门大学",
+      "district": "思明区",
+      "type": "防空洞",
+      "coordinates": [118.105, 24.440],
+      "map_search": "厦门大学芙蓉隧道",
+      "capacity": 2500,
+      "status": "active"
+    },
+    {
+      "id": "xm_006",
+      "name": "集美区人防灾备空间",
+      "address": "厦门市集美区杏林湾",
+      "district": "集美区",
+      "type": "人防工程",
+      "coordinates": [118.095, 24.575],
+      "map_search": "集美区人民防空工程",
+      "capacity": 2800,
+      "status": "active"
+    }
+  ]
+}

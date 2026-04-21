@@ -1,0 +1,12 @@
+{
+  "name": "lua-behavior-tree",
+  "name_zh": "Lua 行为树",
+  "category": "游戏机制",
+  "tags": ["ai", "behavior-tree", "npc", "urhox"],
+  "description": "Lua 行为树运行时，适用于 UrhoX 游戏引擎。提供行为树核心（Node、Composite、Decorator、Action、Condition、Blackboard、BehaviorTree）以及常用内置节点。",
+  "author": "OpenClaw",
+  "version": "1.0.0",
+  "min_engine_version": "1.0.0",
+  "entry": "scripts/main.lua",
+  "engine": "UrhoX"
+}

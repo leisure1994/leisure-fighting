@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>核战争生存指南 | Nuclear Survival Guide</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --danger: #ff3333; --warning: #ff8800; --success: #00ff44; --info: #00aaff; --dark: #0a0a0a; --card: #111; --border: #222; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', sans-serif; background: var(--dark); color: #fff; line-height: 1.8; }
+        
+        .header { background: linear-gradient(135deg, #1a0a0a 0%, var(--dark) 100%); padding: 60px 20px; text-align: center; border-bottom: 3px solid var(--danger); }
+        .header h1 { font-size: 42px; color: var(--danger); margin-bottom: 15px; text-shadow: 0 0 20px rgba(255,51,51,0.5); letter-spacing: 5px; }
+        .header p { font-size: 16px; color: #888; max-width: 600px; margin: 0 auto; }
+        
+        .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
+        
+        .back-link { display: inline-flex; align-items: center; gap: 10px; color: var(--danger); text-decoration: none; margin-bottom: 30px; font-size: 14px; }
+        .back-link:hover { text-decoration: underline; }
+        
+        .section { margin-bottom: 50px; }
+        .section-title { font-size: 28px; color: var(--danger); margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 15px; }
+        .section-title i { font-size: 24px; }
+        
+        .alert-box { background: linear-gradient(135deg, rgba(255,51,51,0.1) 0%, rgba(255,51,51,0.05) 100%); border: 1px solid var(--danger); border-radius: 12px; padding: 25px; margin-bottom: 30px; }
+        .alert-box h3 { color: var(--danger); margin-bottom: 15px; font-size: 18px; }
+        .alert-box ul { list-style: none; padding-left: 0; }
+        .alert-box li { padding: 8px 0; padding-left: 25px; position: relative; }
+        .alert-box li::before { content: '⚠️'; position: absolute; left: 0; }
+        
+        .timeline { position: relative; padding-left: 40px; }
+        .timeline::before { content: ''; position: absolute; left: 15px; top: 0; bottom: 0; width: 2px; background: var(--danger); }
+        .timeline-item { position: relative; margin-bottom: 40px; }
+        .timeline-item::before { content: ''; position: absolute; left: -33px; top: 5px; width: 16px; height: 16px; background: var(--danger); border-radius: 50%; border: 3px solid var(--dark); }
+        .timeline-item h3 { color: #fff; font-size: 20px; margin-bottom: 15px; }
+        .timeline-item .time { color: var(--danger); font-size: 14px; margin-bottom: 10px; display: block; }
+        .timeline-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 25px; }
+        
+        .phase-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 30px; }
+        .phase-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 25px; transition: all 0.3s; }
+        .phase-card:hover { border-color: var(--danger); transform: translateY(-5px); }
+        .phase-card h4 { color: var(--danger); margin-bottom: 15px; font-size: 18px; }
+        .phase-card ul { list-style: none; }
+        .phase-card li { padding: 8px 0; color: #ccc; font-size: 14px; border-bottom: 1px solid var(--border); }
+        .phase-card li:last-child { border-bottom: none; }
+        
+        .protection-levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px; }
+        .protection-card { background: var(--card); border-radius: 12px; padding: 25px; text-align: center; border: 2px solid transparent; }
+        .protection-card.high { border-color: #ff0000; }
+        .protection-card.medium { border-color: #ff8800; }
+        .protection-card.basic { border-color: #ffff00; }
+        .protection-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 24px; }
+        .protection-card.high .protection-icon { background: rgba(255,0,0,0.2); color: #ff0000; }
+        .protection-card.medium .protection-icon { background: rgba(255,136,0,0.2); color: #ff8800; }
+        .protection-card.basic .protection-icon { background: rgba(255,255,0,0.2); color: #ffff00; }
+        .protection-card h4 { margin-bottom: 10px; }
+        .protection-card p { font-size: 13px; color: #888; }
+        
+        .checklist { columns: 2; column-gap: 30px; }
+        .checklist-item { break-inside: avoid; margin-bottom: 10px; padding: 15px; background: var(--card); border-radius: 8px; border: 1px solid var(--border); }
+        .checklist-item input[type="checkbox"] { margin-right: 10px; accent-color: var(--danger); }
+        
+        .nav-footer { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,10,0.98); border-top: 2px solid var(--danger); padding: 15px; display: flex; justify-content: center; gap: 30px; z-index: 1000; }
+        .nav-footer a { color: #888; text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+        .nav-footer a:hover, .nav-footer a.active { color: var(--danger); }
+        
+        @media (max-width: 768px) {
+            .header h1 { font-size: 28px; }
+            .protection-levels { grid-template-columns: 1fr; }
+            .checklist { columns: 1; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1><i class="fas fa-radiation"></i> 核战争生存指南</h1>
+        <p>全面掌握核战爆发前、爆发时、爆发后的生存策略与行动要点</p>
+    </header>
+    
+    <div class="container">
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> 返回地图</a>
+        
+        <div class="alert-box">
+            <h3><i class="fas fa-exclamation-triangle"></i> 核战争警报等级</h3>
+            <ul>
+                <li><strong>绿色警报</strong> - 国际局势紧张，开始储备物资，了解避难所位置</li>
+                <li><strong>黄色警报</strong> - 战争一触即发，立即进入避难所准备状态</li>
+                <li><strong>红色警报</strong> - 核打击 imminent，立即进入最近的地下掩体</li>
+            </ul>
+        </div>
+        
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-clock"></i> 核爆炸时间线</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <span class="time">爆炸前 30 分钟 - 预警阶段</span>
+                    <h3>接到核打击预警</h3>
+                    <div class="timeline-content">
+                        <p>一旦收到官方核打击预警，立即执行以下行动：</p>
+                        <ul style="margin-top: 15px; padding-left: 20px;">
+                            <li>立即前往最近的地下避难所或人防工程</li>
+                            <li>携带应急包（见物资清单）</li>
+                            <li>帮助老人、儿童、残障人士撤离</li>
+                            <li>关闭家中所有门窗和通风系统</li>
+                            <li>开启收音机或手机接收最新指令</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <span class="time">爆炸瞬间 - 0 秒</span>
+                    <h3>核爆炸发生</h3>
+                    <div class="timeline-content">
+                        <p>核爆炸将产生以下致命威胁，必须在地下掩体中躲避：</p>
+                        <ul style="margin-top: 15px; padding-left: 20px;">
+                            <li><strong>光辐射</strong> - 可致失明和严重烧伤，持续数秒</li>
+                            <li><strong>冲击波</strong> - 摧毁建筑物，持续数十秒</li>
+                            <li><strong>早期核辐射</strong> - 致命剂量，持续约1分钟</li>
+                            <li><strong>电磁脉冲(EMP)</strong> - 破坏电子设备</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <span class="time">爆炸后 1-24 小时</span>
+                    <h3>放射性沉降期</h3>
+                    <div class="timeline-content">
+                        <p>核爆炸产生的放射性尘埃开始沉降，这是最危险的时期：</p>
+                        <ul style="margin-top: 15px; padding-left: 20px;">
+                            <li>绝对不要外出，待在地下掩体中</li>
+                            <li>密封所有通风口和门窗</li>
+                            <li>使用储备的水和食物</li>
+                            <li>收听官方广播等待指令</li>
+                            <li>准备好辐射检测仪</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <span class="time">爆炸后 2-14 天</span>
+                    <h3>短期恢复期</h3>
+                    <div class="timeline-content">
+                        <p>辐射水平开始下降，但仍需高度警惕：</p>
+                        <ul style="margin-top: 15px; padding-left: 20px;">
+                            <li>在辐射安全后才可短暂外出</li>
+                            <li>穿戴防护装备（雨衣、口罩、手套）</li>
+                            <li>快速搜集物资后返回掩体</li>
+                            <li>净化身体（彻底洗澡、更换衣物）</li>
+                            <li>监测辐射水平变化</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-shield-alt"></i> 三阶段防护策略</h2>
+            <div class="phase-grid">
+                <div class="phase-card">
+                    <h4><i class="fas fa-hourglass-start"></i> 爆炸前准备</h4>
+                    <ul>
+                        <li>储备至少14天的食物和水</li>
+                        <li>准备应急包和医疗用品</li>
+                        <li>确定家庭避难计划</li>
+                        <li>熟悉附近避难所位置</li>
+                        <li>学习基础急救技能</li>
+                        <li>加固住宅防护能力</li>
+                    </ul>
+                </div>
+                
+                <div class="phase-card">
+                    <h4><i class="fas fa-bolt"></i> 爆炸时应对</h4>
+                    <ul>
+                        <li>立即寻找掩体躲避</li>
+                        <li>远离窗户和外墙</li>
+                        <li>趴下、掩护、抓牢</li>
+                        <li>闭眼并用手臂保护头部</li>
+                        <li>不要直视爆炸闪光</li>
+                        <li>等待冲击波过去</li>
+                    </ul>
+                </div>
+                
+                <div class="phase-card">
+                    <h4><i class="fas fa-house-user"></i> 爆炸后生存</h4>
+                    <ul>
+                        <li>留在掩体中至少48小时</li>
+                        <li>收听官方信息和指令</li>
+                        <li>节约使用储备物资</li>
+                        <li>保持冷静，互相帮助</li>
+                        <li>记录辐射暴露情况</li>
+                        <li>等待救援或撤离指令</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-building"></i> 避难所选择指南</h2>
+            <div class="protection-levels">
+                <div class="protection-card high">
+                    <div class="protection-icon"><i class="fas fa-radiation"></i></div>
+                    <h4>专业核避难所</h4>
+                    <p>人防工程、地下停车场、地铁站等深层地下设施。可抵御核爆冲击波和辐射，是最佳选择。</p>
+                </div>
+                <div class="protection-card medium">
+                    <div class="protection-icon"><i class="fas fa-building"></i></div>
+                    <h4>地下建筑</h4>
+                    <p>地下室、地下商场、地下车库等。可阻挡大部分辐射，但防护能力有限。</p>
+                </div>
+                <div class="protection-card basic">
+                    <div class="protection-icon"><i class="fas fa-home"></i></div>
+                    <h4>地面建筑</h4>
+                    <p>高层建筑中央房间、混凝土建筑等。仅能提供基础防护，非首选。</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-list-check"></i> 紧急行动清单</h2>
+            <div class="checklist">
+                <label class="checklist-item"><input type="checkbox"> 立即前往最近避难所</label>
+                <label class="checklist-item"><input type="checkbox"> 携带应急包和必需品</label>
+                <label class="checklist-item"><input type="checkbox"> 关闭家中门窗和通风</label>
+                <label class="checklist-item"><input type="checkbox"> 通知家人和朋友</label>
+                <label class="checklist-item"><input type="checkbox"> 帮助需要协助的人</label>
+                <label class="checklist-item"><input type="checkbox"> 远离窗户和外墙</label>
+                <label class="checklist-item"><input type="checkbox"> 趴下、掩护、抓牢</label>
+                <label class="checklist-item"><input type="checkbox"> 不要直视爆炸闪光</label>
+                <label class="checklist-item"><input type="checkbox"> 等待冲击波过去</label>
+                <label class="checklist-item"><input type="checkbox"> 密封掩体入口</label>
+                <label class="checklist-item"><input type="checkbox"> 收听官方广播</label>
+                <label class="checklist-item"><input type="checkbox"> 节约使用物资</label>
+            </div>
+        </section>
+    </div>
+    
+    <nav class="nav-footer">
+        <a href="index.html"><i class="fas fa-map"></i> 避难地图</a>
+        <a href="guide.html" class="active"><i class="fas fa-book"></i> 生存指南</a>
+        <a href="supplies.html"><i class="fas fa-box"></i> 物资清单</a>
+        <a href="skills.html"><i class="fas fa-tools"></i> 生存技能</a>
+    </nav>
+</body>
+</html>

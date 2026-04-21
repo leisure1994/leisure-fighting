@@ -1,0 +1,59 @@
+{
+  "name": "AI游戏开发技能包",
+  "version": "1.0.0",
+  "description": "OpenClaw Skill完整套装，包含天道引擎、UrhoX技能、MiniMax和Seedance API工具",
+  "author": "用户161224",
+  "products": [
+    {
+      "id": "tao-world-engine",
+      "name": "天道引擎 v1.2.0",
+      "price": 299,
+      "files": ["tao-world-engine-skill.zip"],
+      "lines_of_code": 30402,
+      "features": ["记忆宫殿", "NPC Agent", "智能路由", "程序化地图"]
+    },
+    {
+      "id": "urhox-skills-pack", 
+      "name": "UrhoX技能包",
+      "price": 199,
+      "files": ["urhox-skills-pack-v1.0.0.zip"],
+      "skills_count": 12,
+      "features": ["武侠战斗", "经济系统", "MMO社交", "程序化地图"]
+    },
+    {
+      "id": "minimax-api",
+      "name": "MiniMax API工具",
+      "price": 99,
+      "features": ["TTS语音", "视频生成", "图片生成", "音乐生成"]
+    },
+    {
+      "id": "seedance-api",
+      "name": "Seedance 2.0工具", 
+      "price": 99,
+      "features": ["文生视频", "图生视频", "视频编辑", "虚拟人像"]
+    }
+  ],
+  "bundles": [
+    {
+      "id": "complete",
+      "name": "完整包",
+      "products": ["tao-world-engine", "urhox-skills-pack", "minimax-api", "seedance-api"],
+      "price": 499,
+      "original_price": 696
+    },
+    {
+      "id": "game-dev",
+      "name": "游戏开发包",
+      "products": ["tao-world-engine", "urhox-skills-pack"],
+      "price": 399,
+      "original_price": 498
+    },
+    {
+      "id": "ai-tools",
+      "name": "AI工具包",
+      "products": ["minimax-api", "seedance-api"],
+      "price": 149,
+      "original_price": 198
+    }
+  ]
+}

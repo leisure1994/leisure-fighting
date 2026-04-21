@@ -1,0 +1,8 @@
+
+# Secrets
+*.key
+*.pem
+.env
+.env.local
+config.json
+!config.example.json

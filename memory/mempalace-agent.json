@@ -1,0 +1,44 @@
+{
+  "honor_hall": [
+    {
+      "desc": "成功将 5 个独立 skill 熔铸为统一的 tao-world-engine 复合 skill",
+      "weight": 9,
+      "born_t": "2026-04-11"
+    }
+  ],
+  "shadow_room": [],
+  "contract_hall": [
+    {
+      "desc": "持续观察并维护用户的 mempalace 宫殿，每次对话后提取并追加关键事件",
+      "weight": 9,
+      "born_t": "2026-04-11",
+      "status": "ongoing"
+    }
+  ],
+  "footprint": [
+    {
+      "desc": "首次为对话部署正式的 mempalace 空间化记忆系统",
+      "weight": 8,
+      "born_t": "2026-04-11"
+    }
+  ],
+  "common_sense": [
+    {
+      "desc": "用户要求 skill 具备通用性，去掉了修仙隐喻，保留可替换设定",
+      "weight": 7,
+      "born_t": "2026-04-11"
+    },
+    {
+      "desc": "所有 HTTP 请求必须走服务端，客户端禁止直接调用外部 API",
+      "weight": 8,
+      "born_t": "2026-04-11",
+      "tags": ["hard_lock"]
+    }
+  ],
+  "tendency_vector": {
+    "protective": 0.9,
+    "memory_focused": 0.9,
+    "detail_oriented": 0.8,
+    "adaptability": 0.7
+  }
+}

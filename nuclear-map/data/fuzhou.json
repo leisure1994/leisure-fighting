@@ -1,0 +1,71 @@
+{
+  "city": "福州",
+  "shelters": [
+    {
+      "id": "fz_001",
+      "name": "福州火车站人防工程",
+      "address": "福州市晋安区华林路",
+      "district": "晋安区",
+      "type": "人防工程",
+      "coordinates": [119.322, 26.113],
+      "map_search": "福州站地下广场",
+      "capacity": 4000,
+      "status": "active"
+    },
+    {
+      "id": "fz_002",
+      "name": "东街口人防工程",
+      "address": "福州市鼓楼区八一七北路",
+      "district": "鼓楼区",
+      "type": "人防工程",
+      "coordinates": [119.303, 26.095],
+      "map_search": "东街口地下商业街",
+      "capacity": 3500,
+      "status": "active"
+    },
+    {
+      "id": "fz_003",
+      "name": "长乐人民会堂人防工程",
+      "address": "福州市长乐区人民会堂",
+      "district": "长乐区",
+      "type": "人防工程",
+      "coordinates": [119.523, 25.963],
+      "map_search": "长乐人民会堂地下停车场",
+      "capacity": 2000,
+      "status": "active"
+    },
+    {
+      "id": "fz_004",
+      "name": "榕城广场人防工程",
+      "address": "福州市鼓楼区榕城广场",
+      "district": "鼓楼区",
+      "type": "人防工程",
+      "coordinates": [119.275, 26.085],
+      "map_search": "榕城广场地下",
+      "capacity": 3000,
+      "status": "active"
+    },
+    {
+      "id": "fz_005",
+      "name": "台江步行街人防工程",
+      "address": "福州市台江区台江路",
+      "district": "台江区",
+      "type": "人防工程",
+      "coordinates": [119.305, 26.055],
+      "map_search": "台江步行街地下",
+      "capacity": 2500,
+      "status": "active"
+    },
+    {
+      "id": "fz_006",
+      "name": "五一广场人防工程",
+      "address": "福州市台江区五一广场",
+      "district": "台江区",
+      "type": "防空洞",
+      "coordinates": [119.310, 26.073],
+      "map_search": "五一广场地下停车场",
+      "capacity": 2800,
+      "status": "active"
+    }
+  ]
+}

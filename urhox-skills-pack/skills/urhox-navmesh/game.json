@@ -1,0 +1,12 @@
+{
+  "name": "urhox-navmesh",
+  "name_zh": "UrhoX 寻路系统",
+  "category": "游戏机制",
+  "tags": ["navmesh", "ai", "pathfinding", "urhox"],
+  "description": "UrhoX 寻路系统——基于 Urho3D 内置 Recast/Detour 的高级纯 Lua 封装。让开发者三行代码即可实现：创建网格、查找路径、NPC 跟随。",
+  "author": "OpenClaw",
+  "version": "1.0.0",
+  "min_engine_version": "1.0.0",
+  "entry": "scripts/main.lua",
+  "engine": "UrhoX"
+}

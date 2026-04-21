@@ -1,0 +1,71 @@
+{
+  "city": "青岛",
+  "shelters": [
+    {
+      "id": "qd_001",
+      "name": "青岛火车站人防工程",
+      "address": "青岛市市南区泰安路2号",
+      "district": "市南区",
+      "type": "人防工程",
+      "coordinates": [120.305, 36.066],
+      "map_search": "青岛站地下广场",
+      "capacity": 4000,
+      "status": "active"
+    },
+    {
+      "id": "qd_002",
+      "name": "五四广场人防工程",
+      "address": "青岛市市南区东海西路",
+      "district": "市南区",
+      "type": "人防工程",
+      "coordinates": [120.385, 36.062],
+      "map_search": "五四广场地下",
+      "capacity": 3500,
+      "status": "active"
+    },
+    {
+      "id": "qd_003",
+      "name": "台东商圈人防工程",
+      "address": "青岛市市北区台东三路",
+      "district": "市北区",
+      "type": "人防工程",
+      "coordinates": [120.355, 36.085],
+      "map_search": "台东步行街地下",
+      "capacity": 3000,
+      "status": "active"
+    },
+    {
+      "id": "qd_004",
+      "name": "李沧人防工程",
+      "address": "青岛市李沧区夏庄路",
+      "district": "李沧区",
+      "type": "人防工程",
+      "coordinates": [120.415, 36.158],
+      "map_search": "李村商圈地下商业街",
+      "capacity": 2500,
+      "status": "active"
+    },
+    {
+      "id": "qd_005",
+      "name": "崂山人防工程",
+      "address": "青岛市崂山区香港东路",
+      "district": "崂山区",
+      "type": "防空洞",
+      "coordinates": [120.440, 36.100],
+      "map_search": "崂山风景区地下设施",
+      "capacity": 2000,
+      "status": "active"
+    },
+    {
+      "id": "qd_006",
+      "name": "胶东国际机场人防工程",
+      "address": "青岛市胶州市胶东街道",
+      "district": "胶州市",
+      "type": "人防工程",
+      "coordinates": [120.075, 36.360],
+      "map_search": "青岛胶东国际机场地下",
+      "capacity": 6000,
+      "status": "active"
+    }
+  ]
+}

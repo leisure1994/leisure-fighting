@@ -1,0 +1,12 @@
+{
+  "name": "urhox-economy-crafting",
+  "name_zh": "UrhoX 经济+制作系统",
+  "category": "游戏系统",
+  "tags": ["economy", "crafting", "inventory", "loot", "urhox", "lua", "rpg", "mmo"],
+  "description": "为 UrhoX 引擎打造的完整经济/制作技能包。包含背包库存、配方合成、动态交易市场、加权掉落表四大子系统，支持元数据物品、异步制作、供需价格浮劢、嵌套 loot table。可直接挂载到玩家/NPC 节点，开箱即用。",
+  "author": "OpenClaw",
+  "version": "1.0.0",
+  "min_engine_version": "1.0.0",
+  "entry": "scripts/main.lua",
+  "engine": "UrhoX"
+}

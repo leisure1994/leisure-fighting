@@ -1,0 +1,12 @@
+{
+  "name": "ink-lua-runtime",
+  "name_zh": "Ink 叙事运行时",
+  "category": "开发工具",
+  "tags": ["ink", "narrative", "story", "dialogue", "urhox", "lua"],
+  "description": "基于开源项目 narrator 重构的 Ink 叙事运行时，用于在 UrhoX 引擎中运行 Ink 叙事脚本。所有 Lua 源码内嵌为单个文件，无需 luarocks、无需外置依赖。",
+  "author": "OpenClaw",
+  "version": "1.0.0",
+  "min_engine_version": "1.0.0",
+  "entry": "scripts/main.lua",
+  "engine": "UrhoX"
+}

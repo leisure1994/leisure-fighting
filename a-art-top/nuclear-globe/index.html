@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>核战争城市自救地球仪 - Nuclear Globe</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts-gl@2.0.9/dist/echarts-gl.min.js"></script>
+    <script src="data.js"></script>
+    <script src="data_batch2_tier2_part2.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow: hidden;
+        }
+        
+        #container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        #globe {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* 顶部标题栏 */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff4444;
+            text-shadow: 0 0 20px rgba(255,68,68,0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .title-icon {
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ff4444;
+        }
+        
+        .stat-label {
+            color: #888;
+            font-size: 10px;
+        }
+        
+        /* 左侧面板 */
+        .left-panel {
+            position: absolute;
+            left: 20px;
+            top: 100px;
+            width: 300px;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            z-index: 100;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+        
+        .panel-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #ff4444;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 5px;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+        
+        .city-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .city-item {
+            padding: 12px;
+            background: #1a1a1a;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .city-item:hover {
+            background: #2a2a2a;
+            border-left-color: #ff4444;
+        }
+        
+        .city-item.active {
+            background: #3a1a1a;
+            border-left-color: #ff4444;
+        }
+        
+        .city-name {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .city-info {
+            font-size: 11px;
+            color: #888;
+        }
+        
+        /* 右侧面板 */
+        .right-panel {
+            position: absolute;
+            right: 20px;
+            top: 100px;
+            width: 350px;
+            background: rgba(0,0,0,0.9);
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            z-index: 100;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .right-panel.visible {
+            display: block;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .close-btn:hover {
+            color: #fff;
+        }
+        
+        .city-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .city-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff4444;
+            margin-bottom: 5px;
+        }
+        
+        .city-coords {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #ff6666;
+            margin: 20px 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .shelter-list, .target-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .shelter-item, .target-item {
+            padding: 12px;
+            background: #1a1a1a;
+            border-radius: 5px;
+            border-left: 3px solid #44ff44;
+        }
+        
+        .target-item {
+            border-left-color: #ff4444;
+        }
+        
+        .item-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .item-meta {
+            font-size: 11px;
+            color: #888;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .item-desc {
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 5px;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 2px 6px;
+            background: #333;
+            border-radius: 3px;
+            font-size: 10px;
+        }
+        
+        .tag.level-5 { background: #ff6600; }
+        .tag.level-6 { background: #ffaa00; }
+        .tag.high-risk { background: #ff0000; }
+        .tag.medium-risk { background: #ff6600; }
+        
+        /* 底部工具栏 */
+        .bottom-bar {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+            background: rgba(0,0,0,0.8);
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 1px solid #333;
+        }
+        
+        .tool-btn {
+            padding: 10px 20px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 12px;
+        }
+        
+        .tool-btn:hover {
+            background: #2a2a2a;
+            border-color: #ff4444;
+        }
+        
+        .tool-btn.active {
+            background: #ff4444;
+            border-color: #ff4444;
+        }
+        
+        /* 图例 */
+        .legend {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 15px;
+            z-index: 100;
+        }
+        
+        .legend-title {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ff4444;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 11px;
+        }
+        
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .legend-dot.shelter { background: #44ff44; }
+        .legend-dot.target { background: #ff0000; }
+        .legend-dot.metro { background: #4488ff; }
+        .legend-dot.mall { background: #ffff66; }
+        
+        /* 生存指南弹窗 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 200;
+            overflow-y: auto;
+        }
+        
+        .modal.visible {
+            display: block;
+        }
+        
+        .modal-content {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 30px;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            color: #ff4444;
+        }
+        
+        .modal-close {
+            font-size: 30px;
+            cursor: pointer;
+            color: #888;
+        }
+        
+        .modal-close:hover {
+            color: #fff;
+        }
+        
+        .guide-section {
+            margin-bottom: 25px;
+        }
+        
+        .guide-title {
+            font-size: 18px;
+            color: #ff6666;
+            margin-bottom: 10px;
+        }
+        
+        .guide-content {
+            line-height: 1.8;
+            color: #ccc;
+        }
+        
+        .guide-content ul {
+            padding-left: 20px;
+        }
+        
+        .guide-content li {
+            margin-bottom: 5px;
+        }
+        
+        /* 加载动画 */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid #333;
+            border-top-color: #ff4444;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            margin-top: 20px;
+            color: #888;
+        }
+        
+        /* 逃离路线面板 */
+        .escape-panel {
+            position: absolute;
+            bottom: 80px;
+            left: 20px;
+            width: 300px;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            z-index: 100;
+            display: none;
+        }
+        
+        .escape-panel.visible {
+            display: block;
+        }
+        
+        .escape-route {
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #1a1a1a;
+            border-radius: 5px;
+            border-left: 3px solid;
+        }
+        
+        .escape-route.safe { border-left-color: #44ff44; }
+        .escape-route.warning { border-left-color: #ffaa00; }
+        .escape-route.danger { border-left-color: #ff0000; }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .left-panel, .right-panel {
+                width: calc(100% - 40px);
+                max-height: 50vh;
+            }
+            
+            .right-panel {
+                top: auto;
+                bottom: 80px;
+            }
+            
+            .bottom-bar {
+                flex-wrap: wrap;
+                width: calc(100% - 40px);
+            }
+            
+            .tool-btn {
+                padding: 8px 15px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <!-- 顶部标题栏 -->
+        <div class="header">
+            <div>
+                <div class="title">
+                    <span class="title-icon">☢️</span>
+                    <span>核战争城市自救地球仪</span>
+                </div>
+                <div class="subtitle">Nuclear War Survival Globe | 中国内地337城市全覆盖</div>
+            </div>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="cityCount">62</div>
+                    <div class="stat-label">已覆盖城市</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="shelterCount">724</div>
+                    <div class="stat-label">避难所</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="targetCount">303</div>
+                    <div class="stat-label">核打击目标</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 左侧面板 - 城市列表 -->
+        <div class="left-panel">
+            <div class="panel-title">🌍 选择城市</div>
+            <input type="text" class="search-box" id="searchBox" placeholder="搜索城市...">
+            <div class="city-list" id="cityList"></div>
+        </div>
+        
+        <!-- 右侧面板 - 城市详情 -->
+        <div class="right-panel" id="rightPanel">
+            <button class="close-btn" onclick="closeRightPanel()">×</button>
+            <div id="cityDetails"></div>
+        </div>
+        
+        <!-- 逃离路线面板 -->
+        <div class="escape-panel" id="escapePanel">
+            <div class="panel-title">🛣️ 智能逃离路线</div>
+            <div id="escapeRoutes"></div>
+        </div>
+        
+        <!-- 底部工具栏 -->
+        <div class="bottom-bar">
+            <button class="tool-btn" id="homeBtn" onclick="focusOnChina()">
+                🏠 回到中国
+            </button>
+            <button class="tool-btn active" id="shelterBtn" onclick="toggleShelters()">
+                🛡️ 显示避难所
+            </button>
+            <button class="tool-btn active" id="targetBtn" onclick="toggleTargets()">
+                ⚠️ 显示核打击目标
+            </button>
+            <button class="tool-btn" id="guideBtn" onclick="showGuide()">
+                📖 生存指南
+            </button>
+        </div>
+        
+        <!-- 图例 -->
+        <div class="legend">
+            <div class="legend-title">图例说明</div>
+            <div class="legend-item">
+                <div class="legend-dot shelter"></div>
+                <span>核掩体/人防工程</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot metro"></div>
+                <span>地铁/地下通道</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot mall"></div>
+                <span>地下商场/停车场</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot target"></div>
+                <span>潜在核打击目标</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 生存指南弹窗 -->
+    <div class="modal" id="guideModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📖 核战争生存指南</div>
+                <span class="modal-close" onclick="closeGuide()">×</span>
+            </div>
+            <div class="guide-body">
+                <div class="guide-section">
+                    <div class="guide-title">⚡ 核爆前准备（24-72小时预警期）</div>
+                    <div class="guide-content">
+                        <ul>
+                            <li><strong>立即储备：</strong>每人至少3-7天的饮用水（4升/天）、不易腐烂食物、常用药品</li>
+                            <li><strong>准备应急包：</strong>手电筒、收音机、电池、急救包、防尘口罩、防护服</li>
+                            <li><strong>确认避难所：</strong>查询最近的地下人防工程、地铁站、地下商场</li>
+                            <li><strong>车辆准备：</strong>加满油，准备逃生物资，规划多条撤离路线</li>
+                            <li><strong>通讯准备：</strong>充电宝充满，准备对讲机，约定亲友集合点</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="guide-section">
+                    <div class="guide-title">☢️ 核爆瞬间应对（闪光/冲击波）</div>
+                    <div class="guide-content">
+                        <ul>
+                            <li><strong>看到闪光：</strong>立即趴下，背向爆炸方向，双手抱头，嘴巴张开</li>
+                            <li><strong>寻找掩体：</strong>躲入地下或混凝土建筑内，远离窗户</li>
+                            <li><strong>切勿直视：</strong>核爆闪光可致盲，闭眼转头保护视力</li>
+                            <li><strong>冲击波后：</strong>等待30秒以上再行动，注意倒塌物和火灾</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="guide-section">
+                    <div class="guide-title">🏃 核爆后撤离（前24小时最关键）</div>
+                    <div class="guide-content">
+                        <ul>
+                            <li><strong>向上风向撤离：</strong>避开烟雾和尘埃降落区域</li>
+                            <li><strong>远离目标点：</strong>避开电厂、水厂、化工厂等可能被打击的目标</li>
+                            <li><strong>封锁口鼻：</strong>用湿布或口罩遮住，避免吸入放射性尘埃</li>
+                            <li><strong>裸露皮肤：</strong>尽量遮盖，事后彻底清洗</li>
+                            <li><strong>进入避难所：</strong>到达后立即更换衣物，淋浴冲洗</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="guide-section">
+                    <div class="guide-title">🛡️ 避难所生存（3天-2周）</div>
+                    <div class="guide-content">
+                        <ul>
+                            <li><strong>封闭空间：</strong>关闭通风，使用滤毒设备，监测辐射水平</li>
+                            <li><strong>节约用水：</strong>优先饮用，收集雨水/空调冷凝水</li>
+                            <li><strong>食物配给：</strong>按热量需求分配，优先食用易腐食品</li>
+                            <li><strong>保持通讯：</strong>收听政府广播，了解外部情况</li>
+                            <li><strong>心理调节：</strong>保持冷静，相互鼓励，等待救援</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="guide-section">
+                    <div class="guide-title">🎒 必备物资清单</div>
+                    <div class="guide-content">
+                        <ul>
+                            <li><strong>水源：</strong>瓶装水、净水片、过滤器（每人每日4升）</li>
+                            <li><strong>食物：</strong>压缩饼干、罐头、能量棒、维生素片（7-14天量）</li>
+                            <li><strong>医疗：</strong>急救包、碘化钾（防甲状腺辐射）、常用药品</li>
+                            <li><strong>防护：</strong>防尘口罩（N95）、雨衣、塑料袋（密封用）</li>
+                            <li><strong>工具：</strong>手电筒、收音机、电池、 Swiss Army Knife、绳索</li>
+                            <li><strong>通讯：</strong>手机充电宝、对讲机、纸质地图、哨子</li>
+                            <li><strong>证件：</strong>身份证、医保卡、现金（断电时可用）</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="guide-section">
+                    <div class="guide-title">📡 信息获取渠道</div>
+                    <div class="guide-content">
+                        <ul>
+                            <li><strong>国家应急广播：</strong>FM 106.1 / AM 639kHz</li>
+                            <li><strong>人防警报：</strong>连续长鸣为空袭预警，连续短鸣为解除警报</li>
+                            <li><strong>手机预警：</strong>开启地震预警和灾害预警功能</li>
+                            <li><strong>官方渠道：</strong>关注国家应急管理部、当地人防办通知</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 加载画面 -->
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">正在加载地球仪数据...</div>
+    </div>
+    
+    <script>
+        // 全局变量
+        let myChart = null;
+        let currentCity = null;
+        let showShelters = true;
+        let showTargets = true;
+        let shelterData = [];
+        let targetData = [];
+        
+        // 初始化
+        function init() {
+            initChart();
+            renderCityList();
+            updateStats();
+            
+            // 隐藏加载画面
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+            }, 1500);
+            
+            // 搜索功能
+            document.getElementById('searchBox').addEventListener('input', (e) => {
+                renderCityList(e.target.value);
+            });
+        }
+        
+        // 初始化3D地球
+        function initChart() {
+            const chartDom = document.getElementById('globe');
+            myChart = echarts.init(chartDom);
+            
+            // 准备数据
+            prepareData();
+            
+            const option = {
+                backgroundColor: '#0a0a0a',
+                globe: {
+                    baseTexture: 'https://cdn.jsdelivr.net/npm/echarts-gl@2.0.9/asset/earth.jpg',
+                    heightTexture: 'https://cdn.jsdelivr.net/npm/echarts-gl@2.0.9/asset/bathymetry_bw_composite_4k.jpg',
+                    displacementScale: 0.05,
+                    displacementQuality: 'high',
+                    environment: 'https://cdn.jsdelivr.net/npm/echarts-gl@2.0.9/asset/starfield.jpg',
+                    shading: 'realistic',
+                    realisticMaterial: {
+                        roughness: 0.8,
+                        metalness: 0.1
+                    },
+                    postEffect: {
+                        enable: true,
+                        bloom: {
+                            enable: true,
+                            bloomIntensity: 0.2
+                        },
+                        SSAO: {
+                            enable: true,
+                            radius: 2,
+                            intensity: 1.2,
+                            quality: 'high'
+                        }
+                    },
+                    temporalSuperSampling: {
+                        enable: true
+                    },
+                    light: {
+                        ambient: {
+                            intensity: 0.4
+                        },
+                        main: {
+                            intensity: 1.2,
+                            shadow: true
+                        }
+                    },
+                    viewControl: {
+                        autoRotate: true,
+                        autoRotateSpeed: 2,
+                        distance: 200,
+                        minDistance: 50,
+                        maxDistance: 400,
+                        alpha: 30,
+                        beta: 160,
+                        minBeta: -360,
+                        maxBeta: 360,
+                        targetCoord: [104.0668, 30.5728] // 聚焦中国
+                    },
+                    layers: [{
+                        type: 'blend',
+                        blendTo: 'emission',
+                        texture: 'https://cdn.jsdelivr.net/npm/echarts-gl@2.0.9/asset/night.jpg',
+                        intensity: 0.5
+                    }]
+                },
+                series: []
+            };
+            
+            // 添加系列
+            updateSeries(option);
+            
+            myChart.setOption(option);
+            
+            // 点击事件
+            myChart.on('click', function(params) {
+                if (params.componentType === 'series') {
+                    const cityKey = findCityByCoord(params.value[0], params.value[1]);
+                    if (cityKey) {
+                        selectCity(cityKey);
+                    }
+                }
+            });
+            
+            // 窗口大小改变时重新调整
+            window.addEventListener('resize', () => {
+                myChart.resize();
+            });
+        }
+        
+        // 更新系列数据
+        function updateSeries(option) {
+            const series = [];
+            
+            // 避难所标记
+            if (showShelters && shelterData.length > 0) {
+                series.push({
+                    type: 'scatter3D',
+                    coordinateSystem: 'globe',
+                    symbol: 'circle',
+                    symbolSize: 6,
+                    itemStyle: {
+                        color: '#44ff44',
+                        opacity: 0.8
+                    },
+                    data: shelterData,
+                    name: '避难所',
+                    label: { show: false },
+                    emphasis: {
+                        itemStyle: {
+                            color: '#88ff88',
+                            scale: 1.5
+                        }
+                    }
+                });
+            }
+            
+            // 核打击目标标记
+            if (showTargets && targetData.length > 0) {
+                series.push({
+                    type: 'scatter3D',
+                    coordinateSystem: 'globe',
+                    symbol: 'triangle',
+                    symbolSize: 8,
+                    itemStyle: {
+                        color: '#ff0000',
+                        opacity: 0.9
+                    },
+                    data: targetData,
+                    name: '核打击目标',
+                    label: { show: false },
+                    emphasis: {
+                        itemStyle: {
+                            color: '#ff4444',
+                            scale: 1.5
+                        }
+                    }
+                });
+            }
+            
+            // 城市标记
+            const cityMarkers = getCityMarkers();
+            if (cityMarkers.length > 0) {
+                series.push({
+                    type: 'scatter3D',
+                    coordinateSystem: 'globe',
+                    symbol: 'pin',
+                    symbolSize: 12,
+                    itemStyle: {
+                        color: '#ffff00',
+                        opacity: 1
+                    },
+                    data: cityMarkers,
+                    name: '城市',
+                    label: {
+                        show: true,
+                        formatter: '{b}',
+                        position: 'top',
+                        fontSize: 11,
+                        color: '#fff',
+                        backgroundColor: 'rgba(0,0,0,0.7)',
+                        padding: [4, 8],
+                        borderRadius: 4
+                    }
+                });
+            }
+            
+            option.series = series;
+        }
+        
+        // 准备数据 - 整合所有数据文件
+        function prepareData() {
+            shelterData = [];
+            targetData = [];
+            
+            // 合并所有数据文件
+            const allData = {
+                ...NUCLEAR_GLOBE_DATA,
+                ...(typeof PART4_CITIES !== 'undefined' ? PART4_CITIES : {})
+            };
+            
+            // 更新全局数据引用
+            window.NUCLEAR_GLOBE_DATA = allData;
+            
+            Object.keys(allData).forEach(cityKey => {
+                const city = allData[cityKey];
+                
+                // 避难所数据
+                if (city.shelters) {
+                    city.shelters.forEach(shelter => {
+                        shelterData.push({
+                            name: shelter.name,
+                            value: [shelter.lng, shelter.lat, 1],
+                            city: cityKey,
+                            shelter: shelter,
+                            itemStyle: {
+                                color: getShelterColor(shelter.type)
+                            }
+                        });
+                    });
+                }
+                
+                // 核打击目标数据
+                if (city.nuclearTargets) {
+                    city.nuclearTargets.forEach(target => {
+                        targetData.push({
+                            name: target.name,
+                            value: [target.lng, target.lat, 2],
+                            city: cityKey,
+                            target: target,
+                            itemStyle: {
+                                color: getTargetColor(target.risk)
+                            }
+                        });
+                    });
+                }
+            });
+        }
+        
+        // 获取避难所颜色
+        function getShelterColor(type) {
+            const colors = {
+                'government': '#44ff44',
+                'transport': '#4488ff',
+                'mall': '#ffff44',
+                'civil': '#ffaa44',
+                'industrial': '#ff8844',
+                'port': '#8844ff'
+            };
+            return colors[type] || '#44ff44';
+        }
+        
+        // 获取目标颜色
+        function getTargetColor(risk) {
+            const colors = {
+                'critical': '#ff0000',
+                'high': '#ff4400',
+                'medium': '#ff8800',
+                'low': '#ffaa00'
+            };
+            return colors[risk] || '#ff4400';
+        }
+        
+        // 获取城市标记
+        function getCityMarkers() {
+            const markers = [];
+            const allData = window.NUCLEAR_GLOBE_DATA || NUCLEAR_GLOBE_DATA;
+            
+            Object.keys(allData).forEach(cityKey => {
+                const city = allData[cityKey];
+                if (city.center) {
+                    markers.push({
+                        name: city.name,
+                        value: [city.center[0], city.center[1], 3]
+                    });
+                }
+            });
+            
+            return markers;
+        }
+        
+        // 渲染城市列表
+        function renderCityList(searchTerm = '') {
+            const cityList = document.getElementById('cityList');
+            const allData = window.NUCLEAR_GLOBE_DATA || NUCLEAR_GLOBE_DATA;
+            
+            let html = '';
+            Object.keys(allData).forEach(cityKey => {
+                const city = allData[cityKey];
+                if (!city.name) return;
+                
+                if (searchTerm && !city.name.includes(searchTerm)) return;
+                
+                const shelterCount = city.shelters ? city.shelters.length : 0;
+                const targetCount = city.nuclearTargets ? city.nuclearTargets.length : 0;
+                
+                html += `
+                    <div class="city-item ${currentCity === cityKey ? 'active' : ''}" onclick="selectCity('${cityKey}')">
+                        <div class="city-name">${city.name}</div>
+                        <div class="city-info">
+                            <span>🛡️ ${shelterCount}个避难所</span>
+                            <span>⚠️ ${targetCount}个目标</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            cityList.innerHTML = html || '<div style="color: #666; text-align: center;">暂无匹配城市</div>';
+        }
+        
+        // 选择城市
+        function selectCity(cityKey) {
+            currentCity = cityKey;
+            const allData = window.NUCLEAR_GLOBE_DATA || NUCLEAR_GLOBE_DATA;
+            const city = allData[cityKey];
+            
+            if (!city) return;
+            
+            // 更新地球视角
+            if (city.center && myChart) {
+                myChart.setOption({
+                    globe: {
+                        viewControl: {
+                            targetCoord: city.center,
+                            distance: 100
+                        }
+                    }
+                });
+            }
+            
+            // 显示右侧面板
+            renderCityDetails(city);
+            document.getElementById('rightPanel').classList.add('visible');
+            
+            // 更新城市列表高亮
+            renderCityList(document.getElementById('searchBox').value);
+        }
+        
+        // 渲染城市详情
+        function renderCityDetails(city) {
+            const detailsDiv = document.getElementById('cityDetails');
+            
+            let sheltersHtml = '';
+            if (city.shelters && city.shelters.length > 0) {
+                sheltersHtml = `
+                    <div class="section-title">🛡️ 避难所 (${city.shelters.length}个)</div>
+                    <div class="shelter-list">
+                        ${city.shelters.map(s => `
+                            <div class="shelter-item">
+                                <div class="item-name">${s.name}</div>
+                                <div class="item-meta">
+                                    <span class="tag level-${s.level.replace('核', '').replace('级', '')}">${s.level}</span>
+                                    <span>${s.type === 'government' ? '政府' : s.type === 'transport' ? '交通' : s.type === 'mall' ? '商场' : '民用'}</span>
+                                    <span>容量:${s.capacity}人</span>
+                                </div>
+                                <div class="item-desc">${s.facilities}</div>
+                                <div class="item-desc">📍 ${s.access}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            let targetsHtml = '';
+            if (city.nuclearTargets && city.nuclearTargets.length > 0) {
+                targetsHtml = `
+                    <div class="section-title">⚠️ 潜在核打击目标 (${city.nuclearTargets.length}个)</div>
+                    <div class="target-list">
+                        ${city.nuclearTargets.map(t => `
+                            <div class="target-item">
+                                <div class="item-name">${t.name}</div>
+                                <div class="item-meta">
+                                    <span class="tag ${t.risk === 'critical' ? 'high-risk' : t.risk === 'high' ? 'high-risk' : 'medium-risk'}">
+                                        ${t.risk === 'critical' ? '极高风险' : t.risk === 'high' ? '高风险' : '中风险'}
+                                    </span>
+                                    <span>${t.type === 'power' ? '电厂' : t.type === 'water' ? '水厂' : t.type === 'chemical' ? '化工厂' : t.type === 'nuclear' ? '核电站' : t.type === 'port' ? '港口' : '其他'}</span>
+                                    <span>影响半径:${t.radius/1000}km</span>
+                                </div>
+                                <div class="item-desc">${t.description}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            detailsDiv.innerHTML = `
+                <div class="city-header">
+                    <div class="city-title">${city.name}</div>
+                    <div class="city-coords">坐标: ${city.center ? city.center[1].toFixed(4) + '°N, ' + city.center[0].toFixed(4) + '°E' : '未知'}</div>
+                </div>
+                ${sheltersHtml}
+                ${targetsHtml}
+            `;
+        }
+        
+        // 关闭右侧面板
+        function closeRightPanel() {
+            document.getElementById('rightPanel').classList.remove('visible');
+            currentCity = null;
+            renderCityList(document.getElementById('searchBox').value);
+        }
+        
+        // 聚焦中国
+        function focusOnChina() {
+            if (myChart) {
+                myChart.setOption({
+                    globe: {
+                        viewControl: {
+                            targetCoord: [104.0668, 30.5728],
+                            distance: 200
+                        }
+                    }
+                });
+            }
+            closeRightPanel();
+        }
+        
+        // 切换避难所显示
+        function toggleShelters() {
+            showShelters = !showShelters;
+            document.getElementById('shelterBtn').classList.toggle('active', showShelters);
+            refreshChart();
+        }
+        
+        // 切换目标显示
+        function toggleTargets() {
+            showTargets = !showTargets;
+            document.getElementById('targetBtn').classList.toggle('active', showTargets);
+            refreshChart();
+        }
+        
+        // 刷新图表
+        function refreshChart() {
+            if (!myChart) return;
+            
+            const option = myChart.getOption();
+            updateSeries(option);
+            myChart.setOption(option);
+        }
+        
+        // 显示生存指南
+        function showGuide() {
+            document.getElementById('guideModal').classList.add('visible');
+        }
+        
+        // 关闭生存指南
+        function closeGuide() {
+            document.getElementById('guideModal').classList.remove('visible');
+        }
+        
+        // 更新统计
+        function updateStats() {
+            const allData = window.NUCLEAR_GLOBE_DATA || NUCLEAR_GLOBE_DATA;
+            const cityCount = Object.keys(allData).length;
+            
+            let shelterCount = 0;
+            let targetCount = 0;
+            
+            Object.values(allData).forEach(city => {
+                if (city.shelters) shelterCount += city.shelters.length;
+                if (city.nuclearTargets) targetCount += city.nuclearTargets.length;
+            });
+            
+            document.getElementById('cityCount').textContent = cityCount;
+            document.getElementById('shelterCount').textContent = shelterCount;
+            document.getElementById('targetCount').textContent = targetCount;
+        }
+        
+        // 通过坐标查找城市
+        function findCityByCoord(lng, lat) {
+            const allData = window.NUCLEAR_GLOBE_DATA || NUCLEAR_GLOBE_DATA;
+            
+            for (const [key, city] of Object.entries(allData)) {
+                if (!city.center) continue;
+                
+                const distance = Math.sqrt(
+                    Math.pow(city.center[0] - lng, 2) + 
+                    Math.pow(city.center[1] - lat, 2)
+                );
+                
+                if (distance < 1) {
+                    return key;
+                }
+            }
+            return null;
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

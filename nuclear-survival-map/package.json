@@ -1,0 +1,31 @@
+{
+  "name": "nuclear-survival-map",
+  "version": "1.0.0",
+  "description": "核战争城市自救地图系统 - Nuclear Survival Map for Chinese Cities",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 8080 -c-1",
+    "build": "echo 'Static site - no build needed'",
+    "deploy": "rsync -avz --exclude='*.md' --exclude='deploy/' . user@server:/var/www/nuclear-survival-map/"
+  },
+  "keywords": [
+    "nuclear",
+    "survival",
+    "map",
+    "shelter",
+    "civil-defense",
+    "china",
+    "emergency",
+    "disaster-preparedness"
+  ],
+  "author": "Nuclear Survival Map Project",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nuclear-survival-map/china"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

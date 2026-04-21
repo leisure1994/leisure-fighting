@@ -1,0 +1,12 @@
+{
+    "name": "urhox-procedural-world",
+    "displayName": "Urhox Procedural World",
+    "version": "1.0.0",
+    "description": "一套面向 urhox (Urho3D/rbfx) 引擎的完整程序化世界生成技能，涵盖波函数坍缩(WFC)、Perlin噪声地形、Cellular Automata洞穴、生物群系系统以及Tiled JSON桥接。",
+    "author": "OpenClaw Assistant",
+    "license": "MIT",
+    "entry": "scripts/main.lua",
+    "tags": ["urhox", "urho3d", "rbfx", "procedural-generation", "wfc", "perlin", "cave", "biome", "tiled", "lua"],
+    "dependencies": [],
+    "minEngineVersion": "1.8.0"
+}

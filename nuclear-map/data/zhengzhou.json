@@ -1,0 +1,71 @@
+{
+  "city": "郑州",
+  "shelters": [
+    {
+      "id": "zz_001",
+      "name": "郑州火车站人防工程",
+      "address": "郑州市二七区火车站广场",
+      "district": "二七区",
+      "type": "人防工程",
+      "coordinates": [113.650, 34.746],
+      "map_search": "郑州站地下广场",
+      "capacity": 5000,
+      "status": "active"
+    },
+    {
+      "id": "zz_002",
+      "name": "二七广场人防工程",
+      "address": "郑州市二七区二七路",
+      "district": "二七区",
+      "type": "人防工程",
+      "coordinates": [113.657, 34.754],
+      "map_search": "二七广场地下",
+      "capacity": 4000,
+      "status": "active"
+    },
+    {
+      "id": "zz_003",
+      "name": "人民路地下人防工程",
+      "address": "郑州市金水区人民路",
+      "district": "金水区",
+      "type": "人防工程",
+      "coordinates": [113.678, 34.759],
+      "map_search": "人民路地下通道",
+      "capacity": 3000,
+      "status": "active"
+    },
+    {
+      "id": "zz_004",
+      "name": "紫荆山地下人防工程",
+      "address": "郑州市金水区紫荆山路",
+      "district": "金水区",
+      "type": "人防工程",
+      "coordinates": [113.694, 34.764],
+      "map_search": "紫荆山公园地下",
+      "capacity": 3500,
+      "status": "active"
+    },
+    {
+      "id": "zz_005",
+      "name": "郑州东站人防工程",
+      "address": "郑州市郑东新区心怡路",
+      "district": "郑东新区",
+      "type": "人防工程",
+      "coordinates": [113.761, 34.750],
+      "map_search": "郑州东站地下广场",
+      "capacity": 6000,
+      "status": "active"
+    },
+    {
+      "id": "zz_006",
+      "name": "郑东新区CBD人防工程",
+      "address": "郑州市郑东新区中央商务区",
+      "district": "郑东新区",
+      "type": "人防工程",
+      "coordinates": [113.730, 34.770],
+      "map_search": "郑东新区CBD地下",
+      "capacity": 5000,
+      "status": "active"
+    }
+  ]
+}

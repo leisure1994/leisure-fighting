@@ -1,0 +1,12 @@
+{
+  "name": "urhox-mmo-social",
+  "version": "1.0.0",
+  "description": "UrhoX MMO 多人社交系统技能包，包含好友、公会、队伍、聊天、邮件、社交关系、师徒、结拜等完整功能。",
+  "author": "UrhoX Community",
+  "category": "Gameplay",
+  "tags": ["mmo", "social", "chat", "guild", "party", "friend", "mail", "multiplayer"],
+  "entry": "scripts/main.lua",
+  "dependencies": [],
+  "minEngineVersion": "1.0.0",
+  "platforms": ["Windows", "Linux", "macOS", "Android", "iOS"]
+}

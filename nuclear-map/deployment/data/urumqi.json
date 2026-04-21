@@ -1,0 +1,71 @@
+{
+  "city": "乌鲁木齐",
+  "shelters": [
+    {
+      "id": "wlmq_001",
+      "name": "乌鲁木齐火车站人防工程",
+      "address": "乌鲁木齐市新市区北京北路",
+      "district": "新市区",
+      "type": "人防工程",
+      "coordinates": [87.556, 43.860],
+      "map_search": "乌鲁木齐站地下广场",
+      "capacity": 5000,
+      "status": "active"
+    },
+    {
+      "id": "wlmq_002",
+      "name": "红山人防工程",
+      "address": "乌鲁木齐市天山区红山路",
+      "district": "天山区",
+      "type": "防空洞",
+      "coordinates": [87.618, 43.794],
+      "map_search": "红山公园防空洞",
+      "capacity": 2500,
+      "status": "active"
+    },
+    {
+      "id": "wlmq_003",
+      "name": "人民广场人防工程",
+      "address": "乌鲁木齐市天山区解放北路",
+      "district": "天山区",
+      "type": "人防工程",
+      "coordinates": [87.623, 43.797],
+      "map_search": "人民广场地下",
+      "capacity": 3000,
+      "status": "active"
+    },
+    {
+      "id": "wlmq_004",
+      "name": "友好路人防工程",
+      "address": "乌鲁木齐市沙依巴克区友好北路",
+      "district": "沙依巴克区",
+      "type": "人防工程",
+      "coordinates": [87.587, 43.830],
+      "map_search": "友好路地下商业街",
+      "capacity": 3500,
+      "status": "active"
+    },
+    {
+      "id": "wlmq_005",
+      "name": "天山区防空洞",
+      "address": "乌鲁木齐市天山区南门",
+      "district": "天山区",
+      "type": "防空洞",
+      "coordinates": [87.620, 43.790],
+      "map_search": "天山区人防纳凉点",
+      "capacity": 2000,
+      "status": "active"
+    },
+    {
+      "id": "wlmq_006",
+      "name": "高新区创新广场人防工程",
+      "address": "乌鲁木齐市高新区文光路",
+      "district": "高新区",
+      "type": "人防工程",
+      "coordinates": [87.545, 43.845],
+      "map_search": "创新广场地下停车场",
+      "capacity": 2800,
+      "status": "active"
+    }
+  ]
+}

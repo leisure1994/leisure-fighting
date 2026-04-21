@@ -1,0 +1,12 @@
+{
+  "name": "urhox-platformer-physics",
+  "name_zh": "UrhoX 平台物理",
+  "category": "游戏机制",
+  "tags": ["physics", "platformer", "kcc", "urhox"],
+  "description": "适用于 UrhoX 引擎的纯 Lua 平台物理模块，将原 C++ 实现的 KinematicCharacterController（lumak-kcc）核心算法翻译为 Lua，基于 UrhoX 原生的 RigidBody + CollisionShape 实现。",
+  "author": "OpenClaw",
+  "version": "1.0.0",
+  "min_engine_version": "1.0.0",
+  "entry": "scripts/main.lua",
+  "engine": "UrhoX"
+}

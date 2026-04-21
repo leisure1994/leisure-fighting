@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-04-17T01:05:00.000Z",
+  "status": "deploying",
+  "totalCities": 268,
+  "targetCities": 337,
+  "remaining": 69,
+  "totalShelters": 1102,
+  "totalTargets": 605
+}

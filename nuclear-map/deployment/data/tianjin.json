@@ -1,0 +1,82 @@
+{
+  "city": "天津",
+  "shelters": [
+    {
+      "id": "tj_001",
+      "name": "天津站人防工程",
+      "address": "天津市河北区天津站后广场",
+      "district": "河北区",
+      "type": "人防工程",
+      "coordinates": [117.205, 39.136],
+      "map_search": "天津站地下广场",
+      "capacity": 5000,
+      "status": "active"
+    },
+    {
+      "id": "tj_002",
+      "name": "和平路地下商业街人防工程",
+      "address": "天津市和平区和平路",
+      "district": "和平区",
+      "type": "人防工程",
+      "coordinates": [117.185, 39.119],
+      "map_search": "和平路地下商业街",
+      "capacity": 3000,
+      "status": "active"
+    },
+    {
+      "id": "tj_003",
+      "name": "小白楼人防工程",
+      "address": "天津市河西区小白楼地区",
+      "district": "河西区",
+      "type": "人防工程",
+      "coordinates": [117.208, 39.111],
+      "map_search": "小白楼地铁站",
+      "capacity": 2500,
+      "status": "active"
+    },
+    {
+      "id": "tj_004",
+      "name": "文化中心地下人防工程",
+      "address": "天津市河西区友谊路",
+      "district": "河西区",
+      "type": "人防工程",
+      "coordinates": [117.215, 39.096],
+      "map_search": "天津文化中心地下广场",
+      "capacity": 4000,
+      "status": "active"
+    },
+    {
+      "id": "tj_005",
+      "name": "鼓楼人防工程",
+      "address": "天津市南开区鼓楼北街",
+      "district": "南开区",
+      "type": "防空洞",
+      "coordinates": [117.175, 39.143],
+      "map_search": "天津鼓楼地下商业街",
+      "capacity": 2000,
+      "status": "active"
+    },
+    {
+      "id": "tj_006",
+      "name": "滨江道地下人防工程",
+      "address": "天津市和平区滨江道",
+      "district": "和平区",
+      "type": "人防工程",
+      "coordinates": [117.195, 39.117],
+      "map_search": "滨江道地下通道",
+      "capacity": 3500,
+      "status": "active"
+    },
+    {
+      "id": "tj_007",
+      "name": "滨海国际机场人防工程",
+      "address": "天津市东丽区滨海国际机场",
+      "district": "东丽区",
+      "type": "人防工程",
+      "coordinates": [117.351, 39.124],
+      "map_search": "天津滨海国际机场",
+      "capacity": 6000,
+      "status": "active"
+    }
+  ]
+}

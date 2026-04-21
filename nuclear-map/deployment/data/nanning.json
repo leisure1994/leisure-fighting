@@ -1,0 +1,71 @@
+{
+  "city": "南宁",
+  "shelters": [
+    {
+      "id": "nn_001",
+      "name": "南宁火车站人防工程",
+      "address": "南宁市兴宁区中华路",
+      "district": "兴宁区",
+      "type": "人防工程",
+      "coordinates": [108.320, 22.817],
+      "map_search": "南宁站地下广场",
+      "capacity": 4000,
+      "status": "active"
+    },
+    {
+      "id": "nn_002",
+      "name": "朝阳广场人防工程",
+      "address": "南宁市兴宁区朝阳路",
+      "district": "兴宁区",
+      "type": "人防工程",
+      "coordinates": [108.322, 22.828],
+      "map_search": "朝阳广场地下商业街",
+      "capacity": 3500,
+      "status": "active"
+    },
+    {
+      "id": "nn_003",
+      "name": "民族大道人防工程",
+      "address": "南宁市青秀区民族大道",
+      "district": "青秀区",
+      "type": "人防工程",
+      "coordinates": [108.340, 22.823],
+      "map_search": "民族大道地下通道",
+      "capacity": 3000,
+      "status": "active"
+    },
+    {
+      "id": "nn_004",
+      "name": "五象广场人防工程",
+      "address": "南宁市青秀区民族大道",
+      "district": "青秀区",
+      "type": "人防工程",
+      "coordinates": [108.375, 22.810],
+      "map_search": "五象广场地下",
+      "capacity": 2500,
+      "status": "active"
+    },
+    {
+      "id": "nn_005",
+      "name": "广西体育中心人防工程",
+      "address": "南宁市良庆区五象大道",
+      "district": "良庆区",
+      "type": "人防工程",
+      "coordinates": [108.390, 22.760],
+      "map_search": "广西体育中心地下停车场",
+      "capacity": 5000,
+      "status": "active"
+    },
+    {
+      "id": "nn_006",
+      "name": "青秀山人防工程",
+      "address": "南宁市青秀区青山路",
+      "district": "青秀区",
+      "type": "防空洞",
+      "coordinates": [108.380, 22.805],
+      "map_search": "青秀山风景区地下设施",
+      "capacity": 2000,
+      "status": "active"
+    }
+  ]
+}

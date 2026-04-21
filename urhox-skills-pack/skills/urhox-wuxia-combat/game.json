@@ -1,0 +1,12 @@
+{
+  "name": "urhox-wuxia-combat",
+  "name_zh": "UrhoX 武侠战斗系统",
+  "category": "开发工具",
+  "tags": ["combat", "wuxia", "urhox", "lua", "fsm", "hitbox", "combo", "skill"],
+  "description": "基于开源 FSM 与 Hitbox 理论构建的武侠特化战斗系统，支持状态机连招、输入缓冲、Hitbox/Hurtbox 管理、受击反馈、霸体优先级与技能 cooldown",
+  "author": "OpenClaw",
+  "version": "1.0.0",
+  "min_engine_version": "1.0.0",
+  "entry": "scripts/main.lua",
+  "engine": "UrhoX"
+}

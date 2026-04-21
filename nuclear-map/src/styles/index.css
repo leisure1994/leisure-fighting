@@ -1,0 +1,208 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   核战争城市自救地图 - 主题样式
+   风格: 废墟中的希望 / 军事生存风格
+   ============================================ */
+
+:root {
+  /* 核心色系 */
+  --color-primary: #0F0F1A;        /* 深空黑 - 主背景 */
+  --color-secondary: #16213E;      /* 深海蓝 - 次背景 */
+  --color-surface: #1A1A2E;        /* 面板色 */
+  --color-surface-light: #252542;  /* 面板亮色 */
+  
+  /* 强调色 */
+  --color-accent-orange: #FF6B35;  /* 警报橙 */
+  --color-accent-cyan: #00D9FF;    /* 生存蓝 */
+  --color-accent-yellow: #FFB800;  /* 警告黄 */
+  
+  /* 状态色 */
+  --color-success: #00D9FF;
+  --color-warning: #FFB800;
+  --color-danger: #FF2E63;
+  
+  /* 文字色 */
+  --color-text: #EAEAEA;
+  --color-text-muted: #8892A0;
+  --color-text-dark: #1A1A2E;
+  
+  /* 边框 */
+  --color-grid: #2D3748;
+  
+  /* 字体 */
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-sans: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-primary);
+  color: var(--color-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--color-accent-orange);
+  color: var(--color-primary);
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--color-secondary); }
+::-webkit-scrollbar-thumb { background: var(--color-grid); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-accent-orange); }
+
+@layer base {
+  .bg-primary { background-color: var(--color-primary); }
+  .bg-secondary { background-color: var(--color-secondary); }
+  .bg-surface { background-color: var(--color-surface); }
+  .bg-surface-light { background-color: var(--color-surface-light); }
+  .text-text { color: var(--color-text); }
+  .text-text-muted { color: var(--color-text-muted); }
+  .text-accent-orange { color: var(--color-accent-orange); }
+  .text-accent-cyan { color: var(--color-accent-cyan); }
+  .text-success { color: var(--color-success); }
+  .text-warning { color: var(--color-warning); }
+  .text-danger { color: var(--color-danger); }
+  .border-grid { border-color: var(--color-grid); }
+}
+
+@layer components {
+  .text-gradient {
+    background: linear-gradient(135deg, var(--color-accent-orange) 0%, var(--color-accent-cyan) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    background: linear-gradient(135deg, var(--color-accent-orange) 0%, #FF8C42 100%);
+    color: white;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(255, 107, 53, 0.3);
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+  }
+  
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    background: transparent;
+    color: var(--color-text);
+    font-weight: 600;
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-grid);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+  
+  .btn-secondary:hover {
+    border-color: var(--color-accent-cyan);
+    color: var(--color-accent-cyan);
+    background: rgba(0, 217, 255, 0.05);
+  }
+  
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+  
+  .nav-item:hover {
+    color: var(--color-text);
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .nav-item.active {
+    color: var(--color-accent-orange);
+    background: rgba(255, 107, 53, 0.1);
+  }
+  
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-grid);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+  }
+  
+  .card:hover { border-color: rgba(255, 107, 53, 0.3); }
+}
+
+.leaflet-container {
+  background: var(--color-primary) !important;
+  font-family: var(--font-sans);
+}
+
+.leaflet-popup-content-wrapper {
+  background: var(--color-surface);
+  border: 1px solid var(--color-grid);
+  border-radius: 0.5rem;
+  color: var(--color-text);
+}
+
+.leaflet-popup-tip {
+  background: var(--color-surface);
+  border: 1px solid var(--color-grid);
+}
+
+.leaflet-control-zoom a {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-grid) !important;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 5px var(--color-accent-orange), 0 0 10px var(--color-accent-orange); }
+  50% { box-shadow: 0 0 20px var(--color-accent-orange), 0 0 30px var(--color-accent-orange); }
+}
+
+.animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+.animate-glow { animation: glow 2s ease-in-out infinite; }
+
+.font-mono { font-family: var(--font-mono); }
+.backdrop-blur-md { backdrop-filter: blur(12px); }
+
+.glass {
+  background: rgba(22, 33, 62, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@media print {
+  .scanlines::before, #loader { display: none !important; }
+}

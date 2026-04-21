@@ -1,0 +1,54 @@
+{
+  "honor_hall": [],
+  "shadow_room": [],
+  "contract_hall": [
+    {
+      "desc": "tao-world-engine skill 已铸成交付，待发布到 TapTap 制造",
+      "weight": 8,
+      "born_t": "2026-04-11",
+      "status": "completed"
+    }
+  ],
+  "footprint": [
+    {
+      "desc": "主动要求部署 mempalace 系统，将未来对话全部纳入宫殿记忆",
+      "weight": 9,
+      "born_t": "2026-04-11",
+      "tags": ["hard_lock"]
+    },
+    {
+      "desc": "上传 5 个 taptap 制造风格 skill 并要求整合为复合技能",
+      "weight": 7,
+      "born_t": "2026-04-11"
+    },
+    {
+      "desc": "展示了 tao-world-engine 的 SKILL.md 与 Tracery 文法文件，确认 skill 包内容完整",
+      "weight": 6,
+      "born_t": "2026-04-11"
+    },
+    {
+      "desc": "要求 skill 从文档升级为完整可运行代码库，天道引擎核心模块全部实装完成",
+      "weight": 10,
+      "born_t": "2026-04-11",
+      "tags": ["hard_lock"]
+    }
+  ],
+  "common_sense": [
+    {
+      "desc": "玩家希望允许用户自带 API Key 解决大流量配额问题",
+      "weight": 7,
+      "born_t": "2026-04-11"
+    },
+    {
+      "desc": "玩家在 TapTap 制造平台进行 skill 创作与发布",
+      "weight": 7,
+      "born_t": "2026-04-11"
+    }
+  ],
+  "tendency_vector": {
+    "proactive": 0.8,
+    "precision_focused": 0.9,
+    "creative_exploration": 0.7,
+    "systematic": 0.8
+  }
+}

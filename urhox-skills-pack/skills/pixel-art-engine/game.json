@@ -1,0 +1,12 @@
+{
+  "name": "pixel-art-engine",
+  "name_zh": "像素美术引擎",
+  "category": "开发工具",
+  "tags": ["pixel-art", "sprite", "animation", "ai-generation", "assets", "urhox"],
+  "description": "高精度像素美术生成管线，支持逐像素风格控制、动画帧一致性约束、统一像素密度与手绘质感输出",
+  "author": "OpenClaw",
+  "version": "2.0.0",
+  "min_engine_version": "1.0.0",
+  "entry": "scripts/main.lua",
+  "engine": "UrhoX"
+}

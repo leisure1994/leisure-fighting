@@ -1,0 +1,12 @@
+{
+  "name": "urhox-extra-effects",
+  "name_zh": "UrhoX 特效库",
+  "category": "开发工具",
+  "tags": ["effects", "particles", "urhox"],
+  "description": "UrhoX 特效库——基于 lumak-extra-samples 的多种效果与示例组件的 Lua 化封装，包含 FFT 海洋、几何体复制风力动画、UI 画板、节点图、标签页、序列帧动画、2D 连线等。",
+  "author": "OpenClaw",
+  "version": "1.0.0",
+  "min_engine_version": "1.0.0",
+  "entry": "scripts/main.lua",
+  "engine": "UrhoX"
+}

@@ -1,0 +1,71 @@
+{
+  "city": "长春",
+  "shelters": [
+    {
+      "id": "cc_001",
+      "name": "长春火车站人防工程",
+      "address": "长春市宽城区长白路5号",
+      "district": "宽城区",
+      "type": "人防工程",
+      "coordinates": [125.325, 43.911],
+      "map_search": "长春站地下广场",
+      "capacity": 4000,
+      "status": "active"
+    },
+    {
+      "id": "cc_002",
+      "name": "人民广场人防工程",
+      "address": "长春市南关区人民大街",
+      "district": "南关区",
+      "type": "人防工程",
+      "coordinates": [125.332, 43.889],
+      "map_search": "人民广场地下",
+      "capacity": 3000,
+      "status": "active"
+    },
+    {
+      "id": "cc_003",
+      "name": "重庆路商圈人防工程",
+      "address": "长春市朝阳区重庆路",
+      "district": "朝阳区",
+      "type": "人防工程",
+      "coordinates": [125.324, 43.897],
+      "map_search": "重庆路地下商业街",
+      "capacity": 3500,
+      "status": "active"
+    },
+    {
+      "id": "cc_004",
+      "name": "红旗街商圈人防工程",
+      "address": "长春市朝阳区红旗街",
+      "district": "朝阳区",
+      "type": "人防工程",
+      "coordinates": [125.300, 43.860],
+      "map_search": "红旗街万达广场地下",
+      "capacity": 3000,
+      "status": "active"
+    },
+    {
+      "id": "cc_005",
+      "name": "伪满皇宫人防工程",
+      "address": "长春市宽城区光复路",
+      "district": "宽城区",
+      "type": "防空洞",
+      "coordinates": [125.345, 43.912],
+      "map_search": "伪满皇宫博物院地下",
+      "capacity": 2000,
+      "status": "active"
+    },
+    {
+      "id": "cc_006",
+      "name": "净月潭人防工程",
+      "address": "长春市南关区净月大街5840号",
+      "district": "南关区",
+      "type": "防空洞",
+      "coordinates": [125.445, 43.790],
+      "map_search": "净月潭国家森林公园地下设施",
+      "capacity": 2500,
+      "status": "active"
+    }
+  ]
+}

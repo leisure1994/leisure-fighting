@@ -1,0 +1,597 @@
+#!/bin/bash
+#
+# MiniMax API CLI Tool
+# Usage: minimax [command] [options]
+#
+
+set -e
+
+# Configuration
+MINIMAX_BASE_URL="https://api.minimaxi.com"
+MINIMAX_BJ_URL="https://api-bj.minimaxi.com"
+CONFIG_FILE="${HOME}/.minimax_config.json"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Get API Key
+get_api_key() {
+    if [ -n "$MINIMAX_API_KEY" ]; then
+        echo "$MINIMAX_API_KEY"
+    elif [ -f "$CONFIG_FILE" ]; then
+        jq -r '.api_key // empty' "$CONFIG_FILE" 2>/dev/null
+    else
+        echo ""
+    fi
+}
+
+# Check API Key
+check_api_key() {
+    local api_key=$(get_api_key)
+    if [ -z "$api_key" ]; then
+        echo -e "${RED}Error: API Key not found${NC}"
+        echo "Please set MINIMAX_API_KEY environment variable or create $CONFIG_FILE"
+        exit 1
+    fi
+    echo "$api_key"
+}
+
+# Help message
+show_help() {
+    cat << EOF
+MiniMax API CLI Tool
+
+Usage: minimax <command> [options]
+
+Commands:
+  chat [message]       文本对话
+  tts [text]          语音合成
+  video [prompt]      视频生成
+  image [prompt]      图片生成
+  music [prompt]      音乐生成
+  voice-clone        语音克隆
+  status             查看账户状态
+
+Options:
+  --help, -h          显示帮助
+  --version, -v       显示版本
+
+Examples:
+  minimax chat "你好"
+  minimax tts "这是一段测试语音" --voice female-shaonv
+  minimax video "一只猫在草地上奔跑"
+  minimax image "可爱的柯基犬"
+
+For command-specific help:
+  minimax <command> --help
+EOF
+}
+
+# Chat command
+chat_command() {
+    local message=""
+    local model="MiniMax-M2.5"
+    local stream=false
+    local temperature=0.7
+    local max_tokens=2048
+
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --model|-m)
+                model="$2"
+                shift 2
+                ;;
+            --temperature|-t)
+                temperature="$2"
+                shift 2
+                ;;
+            --max-tokens)
+                max_tokens="$2"
+                shift 2
+                ;;
+            --stream|-s)
+                stream=true
+                shift
+                ;;
+            --help|-h)
+                cat << EOF
+Usage: minimax chat [message] [options]
+
+Options:
+  --model, -m         模型名称 (default: MiniMax-M2.5)
+  --temperature, -t   温度参数 (default: 0.7)
+  --max-tokens        最大token数 (default: 2048)
+  --stream, -s        流式输出
+
+Examples:
+  minimax chat "你好"
+  minimax chat "写Python代码" --model MiniMax-M2.1
+EOF
+                return
+                ;;
+            *)
+                if [ -z "$message" ]; then
+                    message="$1"
+                fi
+                shift
+                ;;
+        esac
+    done
+
+    if [ -z "$message" ]; then
+        echo -e "${YELLOW}请输入消息:${NC}"
+        read message
+    fi
+
+    local api_key=$(check_api_key)
+
+    echo -e "${GREEN}调用 MiniMax Chat API...${NC}"
+
+    local response=$(curl -s -X POST "${MINIMAX_BASE_URL}/v1/text/chatcompletion_v2" \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer ${api_key}" \
+        -d "{
+            \"model\": \"${model}\",
+            \"messages\": [
+                {\"role\": \"user\", \"content\": \"${message}\"}
+            ],
+            \"temperature\": ${temperature},
+            \"max_tokens\": ${max_tokens}
+        }" 2>/dev/null)
+
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Error: 请求失败${NC}"
+        exit 1
+    fi
+
+    # Parse response
+    local content=$(echo "$response" | jq -r '.choices[0].message.content // .base_resp.status_msg // empty' 2>/dev/null)
+    
+    if [ -n "$content" ]; then
+        echo "$content"
+    else
+        echo "$response" | jq . 2>/dev/null || echo "$response"
+    fi
+}
+
+# TTS command
+tts_command() {
+    local text=""
+    local voice="male-qn-qingse"
+    local model="speech-2.8-turbo"
+    local format="mp3"
+    local output="output.mp3"
+    local speed=1.0
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --voice|-v)
+                voice="$2"
+                shift 2
+                ;;
+            --model|-m)
+                model="$2"
+                shift 2
+                ;;
+            --format|-f)
+                format="$2"
+                shift 2
+                ;;
+            --output|-o)
+                output="$2"
+                shift 2
+                ;;
+            --speed)
+                speed="$2"
+                shift 2
+                ;;
+            --help|-h)
+                cat << EOF
+Usage: minimax tts [text] [options]
+
+Options:
+  --voice, -v         音色ID (default: male-qn-qingse)
+  --model, -m         模型 (default: speech-2.8-turbo)
+  --format, -f        格式 mp3/wav/flac (default: mp3)
+  --output, -o        输出文件 (default: output.mp3)
+  --speed             语速 0.5-2.0 (default: 1.0)
+
+音色列表:
+  male-qn-qingse      青年男声-青涩
+  male-qn-jingying    青年男声-精英
+  female-shaonv       少女声
+  female-yujie        御姐声
+  female-chengshu     成熟女声
+
+Examples:
+  minimax tts "你好世界"
+  minimax tts "测试语音" --voice female-shaonv --output test.mp3
+EOF
+                return
+                ;;
+            *)
+                if [ -z "$text" ]; then
+                    text="$1"
+                fi
+                shift
+                ;;
+        esac
+    done
+
+    if [ -z "$text" ]; then
+        echo -e "${YELLOW}请输入要合成的文本:${NC}"
+        read text
+    fi
+
+    local api_key=$(check_api_key)
+
+    echo -e "${GREEN}正在合成语音...${NC}"
+
+    local response=$(curl -s -X POST "${MINIMAX_BASE_URL}/v1/t2a_v2" \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer ${api_key}" \
+        -d "{
+            \"model\": \"${model}\",
+            \"text\": \"${text}\",
+            \"voice_id\": \"${voice}\",
+            \"audio_format\": \"${format}\",
+            \"output_format\": \"url\"
+        }" 2>/dev/null)
+
+    local audio_url=$(echo "$response" | jq -r '.audio_url // empty' 2>/dev/null)
+
+    if [ -n "$audio_url" ] && [ "$audio_url" != "null" ]; then
+        echo -e "${GREEN}下载音频到 ${output}...${NC}"
+        curl -s -L "$audio_url" -o "$output"
+        echo -e "${GREEN}✓ 已保存: ${output}${NC}"
+    else
+        echo -e "${RED}Error: 语音合成失败${NC}"
+        echo "$response" | jq . 2>/dev/null || echo "$response"
+        exit 1
+    fi
+}
+
+# Video command
+video_command() {
+    local prompt=""
+    local model="MiniMax Hailuo 2.3"
+    local duration=5
+    local ratio="16:9"
+    local output="output.mp4"
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --model|-m)
+                model="$2"
+                shift 2
+                ;;
+            --duration|-d)
+                duration="$2"
+                shift 2
+                ;;
+            --ratio|-r)
+                ratio="$2"
+                shift 2
+                ;;
+            --output|-o)
+                output="$2"
+                shift 2
+                ;;
+            --help|-h)
+                cat << EOF
+Usage: minimax video [prompt] [options]
+
+Options:
+  --model, -m         模型 (default: MiniMax Hailuo 2.3)
+  --duration, -d      时长秒数 5/10 (default: 5)
+  --ratio, -r         比例 16:9/9:16/1:1 (default: 16:9)
+  --output, -o        输出文件 (default: output.mp4)
+
+Examples:
+  minimax video "夕阳下的海滩"
+  minimax video "猫咪奔跑" --duration 10 --ratio 9:16
+EOF
+                return
+                ;;
+            *)
+                if [ -z "$prompt" ]; then
+                    prompt="$1"
+                fi
+                shift
+                ;;
+        esac
+    done
+
+    if [ -z "$prompt" ]; then
+        echo -e "${YELLOW}请输入视频描述:${NC}"
+        read prompt
+    fi
+
+    local api_key=$(check_api_key)
+
+    echo -e "${GREEN}提交视频生成任务...${NC}"
+    echo -e "${YELLOW}提示词: ${prompt}${NC}"
+
+    local response=$(curl -s -X POST "${MINIMAX_BASE_URL}/v1/video_generation" \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer ${api_key}" \
+        -d "{
+            \"model\": \"${model}\",
+            \"prompt\": \"${prompt}\",
+            \"duration\": ${duration},
+            \"aspect_ratio\": \"${ratio}\"
+        }" 2>/dev/null)
+
+    local task_id=$(echo "$response" | jq -r '.task_id // empty' 2>/dev/null)
+
+    if [ -n "$task_id" ] && [ "$task_id" != "null" ]; then
+        echo -e "${GREEN}✓ 任务已提交，ID: ${task_id}${NC}"
+        echo -e "${YELLOW}正在等待生成完成...${NC}"
+        
+        # Poll for completion
+        local attempts=0
+        local max_attempts=60
+        
+        while [ $attempts -lt $max_attempts ]; do
+            sleep 5
+            local status_response=$(curl -s "${MINIMAX_BASE_URL}/v1/video_status?task_id=${task_id}" \
+                -H "Authorization: Bearer ${api_key}" 2>/dev/null)
+            
+            local status=$(echo "$status_response" | jq -r '.status // empty' 2>/dev/null)
+            local video_url=$(echo "$status_response" | jq -r '.video_url // empty' 2>/dev/null)
+            
+            if [ "$status" = "completed" ] && [ -n "$video_url" ] && [ "$video_url" != "null" ]; then
+                echo -e "${GREEN}✓ 视频生成完成，正在下载...${NC}"
+                curl -s -L "$video_url" -o "$output"
+                echo -e "${GREEN}✓ 已保存: ${output}${NC}"
+                return
+            elif [ "$status" = "failed" ]; then
+                echo -e "${RED}✗ 视频生成失败${NC}"
+                echo "$status_response" | jq . 2>/dev/null
+                exit 1
+            fi
+            
+            attempts=$((attempts + 1))
+            echo -n "."
+        done
+        
+        echo -e "\n${YELLOW}等待超时，任务ID: ${task_id}${NC}"
+        echo "稍后可通过以下命令查询状态:"
+        echo "  curl -H 'Authorization: Bearer ${api_key}' ${MINIMAX_BASE_URL}/v1/video_status?task_id=${task_id}"
+    else
+        echo -e "${RED}Error: 任务提交失败${NC}"
+        echo "$response" | jq . 2>/dev/null || echo "$response"
+        exit 1
+    fi
+}
+
+# Image command
+image_command() {
+    local prompt=""
+    local model="image-01"
+    local style=""
+    local output="output.png"
+    local width=1024
+    local height=1024
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --model|-m)
+                model="$2"
+                shift 2
+                ;;
+            --style|-s)
+                style="$2"
+                shift 2
+                ;;
+            --output|-o)
+                output="$2"
+                shift 2
+                ;;
+            --width)
+                width="$2"
+                shift 2
+                ;;
+            --height)
+                height="$2"
+                shift 2
+                ;;
+            --help|-h)
+                cat << EOF
+Usage: minimax image [prompt] [options]
+
+Options:
+  --model, -m         模型 image-01/image-01-live (default: image-01)
+  --style, -s         画风风格
+  --output, -o        输出文件 (default: output.png)
+  --width             宽度 (default: 1024)
+  --height            高度 (default: 1024)
+
+Examples:
+  minimax image "科幻城市"
+  minimax image "可爱猫咪" --style cartoon --output cat.png
+EOF
+                return
+                ;;
+            *)
+                if [ -z "$prompt" ]; then
+                    prompt="$1"
+                fi
+                shift
+                ;;
+        esac
+    done
+
+    if [ -z "$prompt" ]; then
+        echo -e "${YELLOW}请输入图片描述:${NC}"
+        read prompt
+    fi
+
+    local api_key=$(check_api_key)
+
+    echo -e "${GREEN}正在生成图片...${NC}"
+
+    local response=$(curl -s -X POST "${MINIMAX_BASE_URL}/v1/image_generation" \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer ${api_key}" \
+        -d "{
+            \"model\": \"${model}\",
+            \"prompt\": \"${prompt}\",
+            \"width\": ${width},
+            \"height\": ${height}
+        }" 2>/dev/null)
+
+    local image_url=$(echo "$response" | jq -r '.image_url // empty' 2>/dev/null)
+
+    if [ -n "$image_url" ] && [ "$image_url" != "null" ]; then
+        echo -e "${GREEN}下载图片到 ${output}...${NC}"
+        curl -s -L "$image_url" -o "$output"
+        echo -e "${GREEN}✓ 已保存: ${output}${NC}"
+    else
+        echo -e "${RED}Error: 图片生成失败${NC}"
+        echo "$response" | jq . 2>/dev/null || echo "$response"
+        exit 1
+    fi
+}
+
+# Music command
+music_command() {
+    local prompt=""
+    local model="music-2.5"
+    local duration=30
+    local output="output.mp3"
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --model|-m)
+                model="$2"
+                shift 2
+                ;;
+            --duration|-d)
+                duration="$2"
+                shift 2
+                ;;
+            --output|-o)
+                output="$2"
+                shift 2
+                ;;
+            --help|-h)
+                cat << EOF
+Usage: minimax music [prompt] [options]
+
+Options:
+  --model, -m         模型 (default: music-2.5)
+  --duration, -d      时长秒数 (default: 30)
+  --output, -o        输出文件 (default: output.mp3)
+
+Examples:
+  minimax music "轻快的钢琴曲"
+  minimax music "史诗交响乐" --duration 60 --output epic.mp3
+EOF
+                return
+                ;;
+            *)
+                if [ -z "$prompt" ]; then
+                    prompt="$1"
+                fi
+                shift
+                ;;
+        esac
+    done
+
+    if [ -z "$prompt" ]; then
+        echo -e "${YELLOW}请输入音乐描述:${NC}"
+        read prompt
+    fi
+
+    local api_key=$(check_api_key)
+
+    echo -e "${GREEN}正在生成音乐...${NC}"
+
+    local response=$(curl -s -X POST "${MINIMAX_BASE_URL}/v1/music_generation" \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer ${api_key}" \
+        -d "{
+            \"model\": \"${model}\",
+            \"prompt\": \"${prompt}\",
+            \"duration\": ${duration}
+        }" 2>/dev/null)
+
+    local audio_url=$(echo "$response" | jq -r '.audio_url // empty' 2>/dev/null)
+
+    if [ -n "$audio_url" ] && [ "$audio_url" != "null" ]; then
+        echo -e "${GREEN}下载音乐到 ${output}...${NC}"
+        curl -s -L "$audio_url" -o "$output"
+        echo -e "${GREEN}✓ 已保存: ${output}${NC}"
+    else
+        echo -e "${RED}Error: 音乐生成失败${NC}"
+        echo "$response" | jq . 2>/dev/null || echo "$response"
+        exit 1
+    fi
+}
+
+# Status command
+status_command() {
+    local api_key=$(check_api_key)
+    
+    echo -e "${GREEN}MiniMax API Status${NC}"
+    echo "=================="
+    echo "API Key: ${api_key:0:10}..."
+    echo "Base URL: ${MINIMAX_BASE_URL}"
+    echo ""
+    echo -e "${YELLOW}可用命令:${NC}"
+    echo "  chat    - 文本对话"
+    echo "  tts     - 语音合成"
+    echo "  video   - 视频生成"
+    echo "  image   - 图片生成"
+    echo "  music   - 音乐生成"
+}
+
+# Main
+main() {
+    if [ $# -eq 0 ]; then
+        show_help
+        exit 0
+    fi
+
+    local command=$1
+    shift
+
+    case $command in
+        chat)
+            chat_command "$@"
+            ;;
+        tts|speech)
+            tts_command "$@"
+            ;;
+        video)
+            video_command "$@"
+            ;;
+        image|img)
+            image_command "$@"
+            ;;
+        music)
+            music_command "$@"
+            ;;
+        status)
+            status_command
+            ;;
+        --help|-h|help)
+            show_help
+            ;;
+        --version|-v)
+            echo "minimax-cli v1.0.0"
+            ;;
+        *)
+            echo -e "${RED}Unknown command: $command${NC}"
+            show_help
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"

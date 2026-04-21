@@ -1,0 +1,251 @@
+[
+  {
+    "id": "nj_001",
+    "name": "北极岩人防纳凉点",
+    "address": "江苏省南京市玄武区古鸡鸣寺入口旁",
+    "district": "玄武区",
+    "type": "防空洞",
+    "subtype": "山体坑道式防空洞",
+    "description": "位于古鸡鸣寺入口旁的北极岩人防纳凉点，是南京著名的人防工程避暑纳凉点之一。",
+    "coordinates": {
+      "lat": 32.0589,
+      "lng": 118.7423
+    },
+    "map_search": "北极岩人防纳凉点",
+    "capacity": 200,
+    "status": "开放纳凉",
+    "features": [
+      "山体坑道",
+      "古寺旁"
+    ],
+    "source": "南京市国防动员办公室",
+    "note": "开放时间9:00-17:00"
+  },
+  {
+    "id": "nj_002",
+    "name": "菠萝山人防纳凉点",
+    "address": "江苏省南京市鼓楼区广州路229号",
+    "district": "鼓楼区",
+    "type": "防空洞",
+    "subtype": "山体坑道式防空洞",
+    "description": "位于广州路的菠萝山人防纳凉点，是南京夏季避暑纳凉的热门场所。",
+    "coordinates": {
+      "lat": 32.058,
+      "lng": 118.7689
+    },
+    "map_search": "菠萝山人防纳凉点",
+    "capacity": 250,
+    "status": "开放纳凉",
+    "features": [
+      "山体坑道"
+    ],
+    "source": "南京市国防动员办公室",
+    "note": "开放时间9:00-17:00"
+  },
+  {
+    "id": "nj_003",
+    "name": "长江路人防教育体验馆纳凉点",
+    "address": "江苏省南京市玄武区长江路中央路交叉路口",
+    "district": "玄武区",
+    "type": "人防工程",
+    "subtype": "人防教育体验馆",
+    "description": "长江路人防教育体验馆兼纳凉点，集人防科普教育与避暑纳凉功能于一体。",
+    "coordinates": {
+      "lat": 32.0489,
+      "lng": 118.7989
+    },
+    "map_search": "长江路人防教育体验馆",
+    "capacity": 300,
+    "status": "开放纳凉",
+    "features": [
+      "人防教育",
+      "体验馆",
+      "科普"
+    ],
+    "source": "南京市国防动员办公室",
+    "note": "开放时间9:00-17:00"
+  },
+  {
+    "id": "nj_004",
+    "name": "八字山城五口(小桃园)人防纳凉点",
+    "address": "江苏省南京市鼓楼区中山北路453号",
+    "district": "鼓楼区",
+    "type": "防空洞",
+    "subtype": "山体坑道式防空洞",
+    "description": "位于小桃园附近的八字山城五口人防纳凉点。",
+    "coordinates": {
+      "lat": 32.0789,
+      "lng": 118.7523
+    },
+    "map_search": "八字山城五口人防纳凉点",
+    "capacity": 200,
+    "status": "开放纳凉",
+    "features": [
+      "山体坑道"
+    ],
+    "source": "南京市国防动员办公室"
+  },
+  {
+    "id": "nj_005",
+    "name": "北极西村人防纳凉点",
+    "address": "江苏省南京市玄武区北极西村31号",
+    "district": "玄武区",
+    "type": "防空洞",
+    "subtype": "早期坑道式防空洞",
+    "description": "北极西村小区内的人防工程纳凉点。",
+    "coordinates": {
+      "lat": 32.0523,
+      "lng": 118.7456
+    },
+    "map_search": "北极西村人防纳凉点",
+    "capacity": 150,
+    "status": "开放纳凉",
+    "features": [
+      "社区配建"
+    ],
+    "source": "南京市国防动员办公室"
+  },
+  {
+    "id": "nj_006",
+    "name": "如意里小区人防纳凉点",
+    "address": "江苏省南京市玄武区观音阁10号如意里小区",
+    "district": "玄武区",
+    "type": "人防工程",
+    "subtype": "住宅配建人防地下室",
+    "description": "如意里小区配套人防工程纳凉点。",
+    "coordinates": {
+      "lat": 32.0512,
+      "lng": 118.7489
+    },
+    "map_search": "如意里小区人防纳凉点",
+    "capacity": 120,
+    "status": "开放纳凉",
+    "features": [
+      "住宅配建"
+    ],
+    "source": "南京市国防动员办公室"
+  },
+  {
+    "id": "nj_007",
+    "name": "胡家花园人防纳凉点",
+    "address": "江苏省南京市秦淮区老门东鸣羊街胡家花园",
+    "district": "秦淮区",
+    "type": "防空洞",
+    "subtype": "早期坑道式防空洞",
+    "description": "位于老门东历史文化街区的胡家花园人防纳凉点。",
+    "coordinates": {
+      "lat": 32.0189,
+      "lng": 118.7889
+    },
+    "map_search": "胡家花园人防纳凉点",
+    "capacity": 180,
+    "status": "开放纳凉",
+    "features": [
+      "历史文化街区"
+    ],
+    "source": "南京市国防动员办公室"
+  },
+  {
+    "id": "nj_008",
+    "name": "清泽园1栋人防纳凉点",
+    "address": "江苏省南京市建邺区高庙路清泽园1栋",
+    "district": "建邺区",
+    "type": "人防工程",
+    "subtype": "住宅配建人防地下室",
+    "description": "清泽园小区配套人防工程纳凉点。",
+    "coordinates": {
+      "lat": 32.0012,
+      "lng": 118.7189
+    },
+    "map_search": "清泽园人防纳凉点",
+    "capacity": 150,
+    "status": "开放纳凉",
+    "features": [
+      "住宅配建"
+    ],
+    "source": "南京市国防动员办公室"
+  },
+  {
+    "id": "nj_009",
+    "name": "狮子山人防纳凉点",
+    "address": "江苏省南京市鼓楼区狮子山公园内",
+    "district": "鼓楼区",
+    "type": "防空洞",
+    "subtype": "山体坑道式防空洞",
+    "description": "位于狮子山公园内的人防纳凉点，环境优美。",
+    "coordinates": {
+      "lat": 32.0889,
+      "lng": 118.7689
+    },
+    "map_search": "狮子山人防纳凉点",
+    "capacity": 200,
+    "status": "开放纳凉",
+    "features": [
+      "山体坑道",
+      "公园内"
+    ],
+    "source": "南京市国防动员办公室"
+  },
+  {
+    "id": "nj_010",
+    "name": "雨花山人防纳凉点",
+    "address": "江苏省南京市雨花台区雨花台烈士陵园北门旁",
+    "district": "雨花台区",
+    "type": "防空洞",
+    "subtype": "山体坑道式防空洞",
+    "description": "位于雨花台烈士陵园北门旁的人防纳凉点。",
+    "coordinates": {
+      "lat": 31.9989,
+      "lng": 118.7789
+    },
+    "map_search": "雨花山人防纳凉点",
+    "capacity": 250,
+    "status": "开放纳凉",
+    "features": [
+      "山体坑道",
+      "烈士陵园旁"
+    ],
+    "source": "南京市国防动员办公室"
+  },
+  {
+    "id": "nj_011",
+    "name": "太子山公园人防纳凉点",
+    "address": "江苏省南京市江北新区太子山公园内",
+    "district": "江北新区",
+    "type": "防空洞",
+    "subtype": "山体坑道式防空洞",
+    "description": "位于江北新区太子山公园内的人防纳凉点。",
+    "coordinates": {
+      "lat": 32.1589,
+      "lng": 118.6989
+    },
+    "map_search": "太子山公园人防纳凉点",
+    "capacity": 200,
+    "status": "开放纳凉",
+    "features": [
+      "山体坑道",
+      "公园内"
+    ],
+    "source": "南京市国防动员办公室"
+  },
+  {
+    "id": "nj_012",
+    "name": "白马绿地人防纳凉点",
+    "address": "江苏省南京市浦口区白马生活广场负一层",
+    "district": "浦口区",
+    "type": "人防工程",
+    "subtype": "商业配建人防",
+    "description": "白马生活广场地下人防工程纳凉点。",
+    "coordinates": {
+      "lat": 32.1189,
+      "lng": 118.6389
+    },
+    "map_search": "白马绿地人防纳凉点",
+    "capacity": 300,
+    "status": "开放纳凉",
+    "features": [
+      "商业地下"
+    ],
+    "source": "南京市国防动员办公室"
+  }
+]

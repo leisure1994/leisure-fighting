@@ -1,0 +1,71 @@
+{
+  "city": "长沙",
+  "shelters": [
+    {
+      "id": "cs_001",
+      "name": "长沙火车站人防工程",
+      "address": "长沙市芙蓉区车站中路",
+      "district": "芙蓉区",
+      "type": "人防工程",
+      "coordinates": [113.009, 28.197],
+      "map_search": "长沙站地下广场",
+      "capacity": 4000,
+      "status": "active"
+    },
+    {
+      "id": "cs_002",
+      "name": "五一广场人防工程",
+      "address": "长沙市芙蓉区五一广场",
+      "district": "芙蓉区",
+      "type": "人防工程",
+      "coordinates": [112.984, 28.193],
+      "map_search": "五一广场地下商业街",
+      "capacity": 5000,
+      "status": "active"
+    },
+    {
+      "id": "cs_003",
+      "name": "橘子洲人防工程",
+      "address": "长沙市岳麓区橘子洲",
+      "district": "岳麓区",
+      "type": "防空洞",
+      "coordinates": [112.958, 28.170],
+      "map_search": "橘子洲地下停车场",
+      "capacity": 3000,
+      "status": "active"
+    },
+    {
+      "id": "cs_004",
+      "name": "岳麓山人防工程",
+      "address": "长沙市岳麓区岳麓山",
+      "district": "岳麓区",
+      "type": "防空洞",
+      "coordinates": [112.935, 28.180],
+      "map_search": "岳麓山地下防空设施",
+      "capacity": 2500,
+      "status": "active"
+    },
+    {
+      "id": "cs_005",
+      "name": "黄兴路步行街人防工程",
+      "address": "长沙市天心区黄兴路",
+      "district": "天心区",
+      "type": "人防工程",
+      "coordinates": [112.978, 28.189],
+      "map_search": "黄兴路步行街地下",
+      "capacity": 3500,
+      "status": "active"
+    },
+    {
+      "id": "cs_006",
+      "name": "省博物馆人防工程",
+      "address": "长沙市开福区东风路",
+      "district": "开福区",
+      "type": "人防工程",
+      "coordinates": [112.985, 28.235],
+      "map_search": "湖南省博物馆地下停车场",
+      "capacity": 2000,
+      "status": "active"
+    }
+  ]
+}

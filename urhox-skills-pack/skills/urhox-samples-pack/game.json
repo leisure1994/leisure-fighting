@@ -1,0 +1,11 @@
+{
+  "name": "urhox-samples-pack",
+  "name_zh": "UrhoX 示例速查包",
+  "category": "开发工具",
+  "tags": ["samples", "reference", "urhox", "lua"],
+  "description": "将 Urho3D 官方示例的核心玩法与技术点提取为可复用的 Lua 模块库，涵盖 3D 场景、物理、2D、音效、UI、后处理、植被、车辆、网络等十余个领域。",
+  "author": "OpenClaw",
+  "version": "1.0.0",
+  "min_engine_version": "1.0.0",
+  "entry": "scripts/main.lua"
+}

@@ -1,0 +1,849 @@
+// 核战争城市自救地球仪 - 主应用逻辑（修复版 v3.0）
+// 使用 Cesium.js 构建 3D 地球仪，确保边界正确显示
+
+let viewer;
+let shelterEntities = [];
+let currentCity = null;
+
+// ============ 初始化 Cesium 地球仪 ============
+function initGlobe() {
+    console.log('[Nuclear Globe] Starting initialization v3.0...');
+    
+    // 设置 Cesium Ion Token（使用公开可用的测试token，主要使用开源数据源）
+    Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlYWE3ZDAxZS1jZDZlLTQ3M2ItYjBlZC0wY2Y3ODAzOTYwM2QiLCJpZCI6NjEwMjYsImlhdCI6MTcyODI4MjE1OH0.KfKywGAydzCeL6z7eaoU69F2MoCz1K3nXW2OjXh0Pxs';
+    
+    try {
+        // 初始化 Viewer - 使用可靠的默认底图
+        viewer = new Cesium.Viewer('cesiumContainer', {
+            // 使用 Bing Maps 作为默认底图（最可靠）
+            imageryProvider: new Cesium.BingMapsImageryProvider({
+                key: 'Agy2p8F1tRE4dYK_Qb7gHY_5tIp0OUrsTqdD50B_RhI4pZP4nB0vFWL8f6Jygw0E', // 公开测试key
+                mapStyle: Cesium.BingMapsStyle.AERIAL_WITH_LABELS
+            }),
+            terrainProvider: Cesium.createWorldTerrain({
+                requestWaterMask: true,
+                requestVertexNormals: true
+            }),
+            baseLayerPicker: true, // 启用图层选择器让用户切换
+            geocoder: true,
+            homeButton: true,
+            sceneModePicker: true,
+            navigationHelpButton: false,
+            animation: false,
+            timeline: false,
+            fullscreenButton: false,
+            vrButton: false
+        });
+        
+        console.log('[Nuclear Globe] Viewer created with Bing Maps');
+    } catch (e) {
+        console.error('[Nuclear Globe] Failed to create viewer with Bing, trying fallback...', e);
+        
+        // 备用方案：使用 Natural Earth 数据
+        viewer = new Cesium.Viewer('cesiumContainer', {
+            imageryProvider: new Cesium.TileMapServiceImageryProvider({
+                url: Cesium.buildModuleUrl('Assets/Textures/NaturalEarthII')
+            }),
+            terrainProvider: new Cesium.EllipsoidTerrainProvider(),
+            baseLayerPicker: true,
+            geocoder: false,
+            homeButton: true,
+            sceneModePicker: true,
+            navigationHelpButton: false,
+            animation: false,
+            timeline: false
+        });
+    }
+    
+    // 设置视觉效果
+    setupVisualEffects();
+    
+    // 加载边界和标记
+    loadWorldBoundaries();
+    loadChinaBoundaries();
+    loadCityMarkers();
+    
+    // 生成避难所数据
+    if (typeof SHELTER_DATA !== 'undefined') {
+        generateShelterEntities();
+        populateCityList();
+        updateStats();
+    }
+    
+    // 绑定事件
+    setupEventHandlers();
+    
+    // 初始视角 - 中国
+    flyToChina();
+    
+    // 隐藏加载动画
+    setTimeout(() => {
+        const loading = document.getElementById('loading');
+        if (loading) loading.classList.add('hidden');
+    }, 2000);
+    
+    console.log('[Nuclear Globe] Initialization complete!');
+}
+
+// ============ 视觉效果设置 ============
+function setupVisualEffects() {
+    const scene = viewer.scene;
+    const globe = scene.globe;
+    
+    // 深空背景
+    scene.backgroundColor = Cesium.Color.fromCssColorString('#0a0a1a');
+    
+    // 启用光照
+    globe.enableLighting = true;
+    globe.lightingFadeOutDistance = 100000;
+    globe.lightingFadeInDistance = 10000000;
+    
+    // 大气效果
+    scene.skyAtmosphere.show = true;
+    scene.skyAtmosphere.hueShift = 0.0;
+    scene.skyAtmosphere.saturationShift = -0.3;
+    scene.skyAtmosphere.brightnessShift = -0.1;
+    
+    // 雾效果增加深度感
+    scene.fog.enabled = true;
+    scene.fog.density = 0.0001;
+    scene.fog.minimumBrightness = 0.05;
+    
+    // 禁用默认UI元素
+    viewer.selectionIndicator.show = false;
+    viewer.infoBox.show = false;
+    
+    // 相机控制设置
+    scene.screenSpaceCameraController.minimumZoomDistance = 1000;
+    scene.screenSpaceCameraController.maximumZoomDistance = 50000000;
+    scene.screenSpaceCameraController.enableTilt = true;
+    
+    // 启用HDR
+    scene.highDynamicRange = true;
+    
+    console.log('[Nuclear Globe] Visual effects configured');
+}
+
+// ============ 加载世界主要国家边界 ============
+function loadWorldBoundaries() {
+    console.log('[Nuclear Globe] Loading world boundaries...');
+    
+    // 定义主要国家的边界坐标（使用真实的大致边界轮廓）
+    const countries = [
+        {
+            name: "中国",
+            color: Cesium.Color.RED,
+            width: 4,
+            // 中国真实边界轮廓（简化版）
+            coords: [
+                [73.5, 35.0], [73.5, 40.0], [78.0, 42.0], [80.0, 42.0], 
+                [85.0, 45.0], [90.0, 48.0], [95.0, 49.0], [100.0, 50.0],
+                [105.0, 50.0], [110.0, 49.0], [115.0, 47.0], [120.0, 50.0],
+                [125.0, 53.0], [130.0, 48.0], [135.0, 48.0], [135.0, 40.0],
+                [130.0, 42.0], [125.0, 40.0], [122.0, 37.0], [120.0, 35.0],
+                [118.0, 33.0], [116.0, 30.0], [114.0, 28.0], [110.0, 25.0],
+                [108.0, 23.0], [105.0, 22.0], [100.0, 20.0], [98.0, 22.0],
+                [95.0, 25.0], [90.0, 25.0], [85.0, 22.0], [80.0, 25.0],
+                [78.0, 30.0], [75.0, 32.0], [73.5, 35.0]
+            ]
+        },
+        {
+            name: "俄罗斯",
+            color: Cesium.Color.YELLOW,
+            width: 3,
+            coords: [
+                [27.0, 55.0], [30.0, 60.0], [35.0, 65.0], [40.0, 67.0],
+                [50.0, 70.0], [60.0, 72.0], [70.0, 72.0], [80.0, 75.0],
+                [90.0, 75.0], [100.0, 75.0], [110.0, 75.0], [120.0, 72.0],
+                [130.0, 70.0], [140.0, 65.0], [150.0, 60.0], [160.0, 58.0],
+                [170.0, 60.0], [180.0, 65.0], [180.0, 70.0], [175.0, 72.0],
+                [170.0, 75.0], [160.0, 77.0], [150.0, 75.0], [140.0, 72.0],
+                [130.0, 70.0], [120.0, 68.0], [110.0, 66.0], [100.0, 65.0],
+                [90.0, 62.0], [80.0, 60.0], [70.0, 58.0], [60.0, 55.0],
+                [50.0, 52.0], [40.0, 50.0], [30.0, 52.0], [27.0, 55.0]
+            ]
+        },
+        {
+            name: "美国",
+            color: Cesium.Color.YELLOW,
+            width: 3,
+            coords: [
+                [-125.0, 49.0], [-120.0, 49.0], [-115.0, 49.0], [-110.0, 49.0],
+                [-105.0, 49.0], [-100.0, 49.0], [-95.0, 49.0], [-90.0, 48.0],
+                [-85.0, 47.0], [-82.0, 45.0], [-80.0, 42.0], [-77.0, 39.0],
+                [-75.0, 36.0], [-73.0, 33.0], [-70.0, 30.0], [-68.0, 28.0],
+                [-66.0, 25.0], [-80.0, 25.0], [-95.0, 25.0], [-105.0, 27.0],
+                [-110.0, 29.0], [-115.0, 31.0], [-117.0, 33.0], [-120.0, 35.0],
+                [-123.0, 39.0], [-125.0, 45.0], [-125.0, 49.0]
+            ]
+        },
+        {
+            name: "加拿大",
+            color: Cesium.Color.YELLOW,
+            width: 3,
+            coords: [
+                [-140.0, 60.0], [-130.0, 65.0], [-120.0, 68.0], [-110.0, 70.0],
+                [-100.0, 72.0], [-90.0, 74.0], [-80.0, 75.0], [-70.0, 77.0],
+                [-60.0, 78.0], [-50.0, 77.0], [-52.0, 60.0], [-55.0, 50.0],
+                [-60.0, 48.0], [-65.0, 45.0], [-70.0, 43.0], [-75.0, 42.0],
+                [-80.0, 42.0], [-85.0, 45.0], [-90.0, 48.0], [-95.0, 50.0],
+                [-100.0, 52.0], [-110.0, 55.0], [-120.0, 56.0], [-130.0, 58.0],
+                [-140.0, 60.0]
+            ]
+        },
+        {
+            name: "巴西",
+            color: Cesium.Color.YELLOW,
+            width: 2,
+            coords: [
+                [-74.0, 5.0], [-70.0, 2.0], [-65.0, 0.0], [-60.0, -5.0],
+                [-55.0, -10.0], [-50.0, -15.0], [-48.0, -20.0], [-45.0, -25.0],
+                [-40.0, -30.0], [-35.0, -25.0], [-34.0, -20.0], [-35.0, -15.0],
+                [-38.0, -10.0], [-40.0, -5.0], [-45.0, 0.0], [-50.0, 2.0],
+                [-55.0, 4.0], [-60.0, 5.0], [-65.0, 5.0], [-70.0, 5.0],
+                [-74.0, 5.0]
+            ]
+        },
+        {
+            name: "印度",
+            color: Cesium.Color.YELLOW,
+            width: 2,
+            coords: [
+                [68.0, 23.0], [70.0, 25.0], [72.0, 27.0], [75.0, 30.0],
+                [77.0, 32.0], [79.0, 33.0], [80.0, 35.0], [82.0, 33.0],
+                [85.0, 30.0], [88.0, 27.0], [90.0, 25.0], [92.0, 24.0],
+                [93.0, 26.0], [94.0, 28.0], [95.0, 26.0], [94.0, 24.0],
+                [92.0, 22.0], [90.0, 20.0], [88.0, 18.0], [85.0, 16.0],
+                [82.0, 15.0], [79.0, 15.0], [76.0, 16.0], [73.0, 18.0],
+                [70.0, 20.0], [68.0, 23.0]
+            ]
+        },
+        {
+            name: "澳大利亚",
+            color: Cesium.Color.YELLOW,
+            width: 2,
+            coords: [
+                [113.0, -11.0], [120.0, -11.0], [125.0, -12.0], [130.0, -15.0],
+                [135.0, -20.0], [140.0, -25.0], [145.0, -30.0], [150.0, -35.0],
+                [153.0, -38.0], [150.0, -40.0], [145.0, -38.0], [140.0, -35.0],
+                [135.0, -32.0], [130.0, -30.0], [125.0, -28.0], [120.0, -25.0],
+                [115.0, -20.0], [113.0, -15.0], [113.0, -11.0]
+            ]
+        },
+        {
+            name: "日本",
+            color: Cesium.Color.YELLOW,
+            width: 2,
+            coords: [
+                [129.0, 31.0], [132.0, 33.0], [135.0, 35.0], [138.0, 37.0],
+                [141.0, 39.0], [144.0, 41.0], [146.0, 43.0], [146.0, 45.0],
+                [144.0, 45.0], [142.0, 43.0], [140.0, 41.0], [138.0, 39.0],
+                [136.0, 37.0], [134.0, 35.0], [132.0, 33.0], [130.0, 31.0],
+                [129.0, 31.0]
+            ]
+        },
+        {
+            name: "英国",
+            color: Cesium.Color.YELLOW,
+            width: 2,
+            coords: [
+                [-8.0, 50.0], [-6.0, 52.0], [-4.0, 54.0], [-2.0, 56.0],
+                [0.0, 58.0], [2.0, 58.0], [2.0, 54.0], [1.0, 52.0],
+                [0.0, 50.0], [-2.0, 50.0], [-5.0, 50.0], [-8.0, 50.0]
+            ]
+        },
+        {
+            name: "法国",
+            color: Cesium.Color.YELLOW,
+            width: 2,
+            coords: [
+                [-5.0, 48.0], [-2.0, 50.0], [2.0, 51.0], [5.0, 51.0],
+                [8.0, 49.0], [8.0, 46.0], [7.0, 44.0], [5.0, 43.0],
+                [3.0, 42.0], [0.0, 42.0], [-3.0, 43.0], [-5.0, 45.0],
+                [-5.0, 48.0]
+            ]
+        },
+        {
+            name: "德国",
+            color: Cesium.Color.YELLOW,
+            width: 2,
+            coords: [
+                [5.0, 47.0], [7.0, 49.0], [10.0, 51.0], [13.0, 54.0],
+                [15.0, 55.0], [15.0, 51.0], [14.0, 49.0], [12.0, 48.0],
+                [10.0, 47.0], [8.0, 47.0], [6.0, 47.0], [5.0, 47.0]
+            ]
+        },
+        {
+            name: "意大利",
+            color: Cesium.Color.YELLOW,
+            width: 2,
+            coords: [
+                [7.0, 37.0], [8.0, 39.0], [10.0, 41.0], [12.0, 43.0],
+                [14.0, 44.0], [15.0, 42.0], [16.0, 40.0], [15.0, 38.0],
+                [13.0, 37.0], [11.0, 37.0], [9.0, 37.0], [7.0, 37.0]
+            ]
+        }
+    ];
+    
+    // 为每个国家添加边界线
+    countries.forEach(country => {
+        const positions = country.coords.map(coord => 
+            Cesium.Cartesian3.fromDegrees(coord[0], coord[1], 1000)
+        );
+        
+        // 中国边界使用更高亮的效果
+        const isChina = country.name === '中国';
+        
+        // 添加发光边界线
+        viewer.entities.add({
+            polyline: {
+                positions: positions,
+                width: isChina ? 6 : country.width,
+                material: new Cesium.PolylineGlowMaterialProperty({
+                    glowPower: isChina ? 0.5 : 0.3,
+                    color: country.color
+                }),
+                clampToGround: true
+            }
+        });
+        
+        // 中国添加第二层实体线
+        if (isChina) {
+            viewer.entities.add({
+                polyline: {
+                    positions: positions,
+                    width: 3,
+                    material: new Cesium.ColorMaterialProperty(Cesium.Color.RED),
+                    clampToGround: true
+                }
+            });
+            
+            // 中国标签
+            viewer.entities.add({
+                position: Cesium.Cartesian3.fromDegrees(105, 38, 200000),
+                label: {
+                    text: '中国',
+                    font: 'bold 24px "Microsoft YaHei", sans-serif',
+                    fillColor: Cesium.Color.RED,
+                    outlineColor: Cesium.Color.BLACK,
+                    outlineWidth: 4,
+                    style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                    verticalOrigin: Cesium.VerticalOrigin.CENTER,
+                    horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+                    scaleByDistance: new Cesium.NearFarScalar(500000, 2.0, 20000000, 0.5)
+                }
+            });
+        }
+    });
+    
+    console.log('[Nuclear Globe] World boundaries loaded:', countries.length, 'countries');
+}
+
+// ============ 加载中国省级边界 ============
+function loadChinaBoundaries() {
+    if (typeof CHINA_PROVINCES_GEOJSON === 'undefined') {
+        console.warn('[Nuclear Globe] Province data not loaded');
+        return;
+    }
+    
+    console.log('[Nuclear Globe] Loading China province boundaries...');
+    
+    const provinces = CHINA_PROVINCES_GEOJSON.features;
+    
+    provinces.forEach(province => {
+        const coords = province.geometry.coordinates[0];
+        const positions = coords.map(coord => 
+            Cesium.Cartesian3.fromDegrees(coord[0], coord[1], 500)
+        );
+        
+        // 省级边界 - 使用更精细的样式
+        viewer.entities.add({
+            polyline: {
+                positions: positions,
+                width: 2,
+                material: new Cesium.PolylineGlowMaterialProperty({
+                    color: Cesium.Color.fromCssColorString('#ffd700'),
+                    glowPower: 0.3
+                }),
+                clampToGround: true
+            }
+        });
+        
+        // 省名标签（只显示较大的省，避免拥挤）
+        const center = province.properties.center;
+        // 简化标签显示，只显示主要省份
+        const majorProvinces = ['北京市', '上海市', '广东省', '江苏省', '浙江省', '山东省', '河南省', '四川省', '湖北省', '湖南省', '河北省', '福建省'];
+        
+        if (majorProvinces.includes(province.properties.name)) {
+            viewer.entities.add({
+                position: Cesium.Cartesian3.fromDegrees(center[0], center[1], 10000),
+                label: {
+                    text: province.properties.name.replace('省', '').replace('市', '').replace('自治区', '').replace('特别行政区', ''),
+                    font: 'bold 14px "Microsoft YaHei", sans-serif',
+                    fillColor: Cesium.Color.fromCssColorString('#ffd700'),
+                    outlineColor: Cesium.Color.BLACK,
+                    outlineWidth: 3,
+                    style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                    verticalOrigin: Cesium.VerticalOrigin.CENTER,
+                    horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+                    scaleByDistance: new Cesium.NearFarScalar(100000, 1.2, 3000000, 0.3),
+                    translucencyByDistance: new Cesium.NearFarScalar(100000, 1.0, 5000000, 0.0)
+                }
+            });
+        }
+    });
+    
+    console.log('[Nuclear Globe] China province boundaries loaded:', provinces.length, 'provinces');
+}
+
+// ============ 加载城市标记 ============
+function loadCityMarkers() {
+    console.log('[Nuclear Globe] Loading city markers...');
+    
+    // 主要城市数据
+    const cities = [
+        // 直辖市
+        {name: "北京", pos: [116.4074, 39.9042], type: "capital", size: 15},
+        {name: "上海", pos: [121.4737, 31.2304], type: "capital", size: 15},
+        {name: "天津", pos: [117.2008, 39.0842], type: "capital", size: 12},
+        {name: "重庆", pos: [106.5516, 29.5630], type: "capital", size: 12},
+        // 省会城市
+        {name: "广州", pos: [113.2644, 23.1291], type: "capital", size: 12},
+        {name: "深圳", pos: [114.0579, 22.5431], type: "city", size: 12},
+        {name: "成都", pos: [104.0665, 30.5723], type: "capital", size: 12},
+        {name: "武汉", pos: [114.3054, 30.5928], type: "capital", size: 12},
+        {name: "西安", pos: [108.9398, 34.3416], type: "capital", size: 12},
+        {name: "杭州", pos: [120.1551, 30.2741], type: "capital", size: 12},
+        {name: "南京", pos: [118.7969, 32.0603], type: "capital", size: 12},
+        {name: "郑州", pos: [113.6253, 34.7466], type: "capital", size: 10},
+        {name: "长沙", pos: [112.9388, 28.2282], type: "capital", size: 10},
+        {name: "沈阳", pos: [123.4315, 41.2976], type: "capital", size: 10},
+        {name: "济南", pos: [117.0208, 36.6683], type: "capital", size: 10},
+        {name: "哈尔滨", pos: [126.6617, 45.7423], type: "capital", size: 10},
+        {name: "长春", pos: [125.3235, 43.8171], type: "capital", size: 10},
+        {name: "石家庄", pos: [114.5149, 38.0423], type: "capital", size: 10},
+        {name: "太原", pos: [112.5624, 37.8734], type: "capital", size: 10},
+        {name: "合肥", pos: [117.2849, 31.8612], type: "capital", size: 10},
+        {name: "南昌", pos: [115.8540, 28.6742], type: "capital", size: 10},
+        {name: "福州", pos: [119.2951, 26.0998], type: "capital", size: 10},
+        {name: "贵阳", pos: [106.6302, 26.6477], type: "capital", size: 10},
+        {name: "昆明", pos: [102.7100, 25.0453], type: "capital", size: 10},
+        {name: "拉萨", pos: [91.1172, 29.6469], type: "capital", size: 10},
+        {name: "兰州", pos: [103.8263, 36.0594], type: "capital", size: 10},
+        {name: "西宁", pos: [101.7802, 36.6209], type: "capital", size: 10},
+        {name: "银川", pos: [106.2591, 38.4720], type: "capital", size: 10},
+        {name: "乌鲁木齐", pos: [87.6168, 43.8256], type: "capital", size: 10},
+        {name: "南宁", pos: [108.3275, 22.8152], type: "capital", size: 10},
+        {name: "海口", pos: [110.3492, 20.0174], type: "capital", size: 10},
+        {name: "呼和浩特", pos: [111.7656, 43.8398], type: "capital", size: 10},
+        // 重要城市
+        {name: "大连", pos: [121.6147, 38.9140], type: "city", size: 8},
+        {name: "青岛", pos: [120.3826, 36.0671], type: "city", size: 8},
+        {name: "宁波", pos: [121.5500, 29.8750], type: "city", size: 8},
+        {name: "厦门", pos: [118.0894, 24.4798], type: "city", size: 8},
+        {name: "苏州", pos: [120.5853, 31.2989], type: "city", size: 8},
+        {name: "无锡", pos: [120.3119, 31.4912], type: "city", size: 8},
+        {name: "佛山", pos: [113.1214, 23.0215], type: "city", size: 8},
+        {name: "东莞", pos: [113.7518, 23.0207], type: "city", size: 8},
+        {name: "温州", pos: [120.6994, 27.9943], type: "city", size: 6},
+        {name: "徐州", pos: [117.2841, 34.2058], type: "city", size: 6},
+        {name: "南通", pos: [120.8943, 31.9802], type: "city", size: 6},
+        {name: "烟台", pos: [121.4481, 37.4635], type: "city", size: 6},
+        {name: "唐山", pos: [118.1802, 39.6309], type: "city", size: 6},
+        {name: "洛阳", pos: [112.4345, 34.6197], type: "city", size: 6},
+        {name: "襄阳", pos: [112.1226, 32.0090], type: "city", size: 6},
+        {name: "岳阳", pos: [113.1292, 29.3571], type: "city", size: 6},
+        {name: "桂林", pos: [110.2993, 25.2742], type: "city", size: 6},
+        {name: "三亚", pos: [109.5121, 18.2528], type: "city", size: 6},
+        {name: "遵义", pos: [106.9272, 27.7254], type: "city", size: 6},
+        {name: "绵阳", pos: [104.6796, 31.4675], type: "city", size: 6},
+        {name: "宜昌", pos: [111.2865, 30.6919], type: "city", size: 6},
+        {name: "鞍山", pos: [122.9950, 41.1086], type: "city", size: 6},
+        {name: "吉林", pos: [126.5530, 43.8376], type: "city", size: 6},
+        {name: "大庆", pos: [125.1033, 46.5893], type: "city", size: 6},
+        {name: "齐齐哈尔", pos: [123.9182, 47.3543], type: "city", size: 6}
+    ];
+    
+    cities.forEach(city => {
+        const color = city.type === 'capital' ? Cesium.Color.fromCssColorString('#ff4757') : 
+                      Cesium.Color.fromCssColorString('#2ed573');
+        
+        // 添加发光点
+        viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(city.pos[0], city.pos[1], 1000),
+            point: {
+                pixelSize: city.size,
+                color: color,
+                outlineColor: Cesium.Color.WHITE,
+                outlineWidth: 2,
+                scaleByDistance: new Cesium.NearFarScalar(50000, 1.5, 10000000, 0.5),
+                translucencyByDistance: new Cesium.NearFarScalar(100000, 1.0, 10000000, 0.0)
+            },
+            label: {
+                text: city.name,
+                font: city.type === 'capital' ? 
+                    'bold 16px "Microsoft YaHei", sans-serif' : 
+                    '14px "Microsoft YaHei", sans-serif',
+                fillColor: Cesium.Color.WHITE,
+                outlineColor: Cesium.Color.BLACK,
+                outlineWidth: 3,
+                style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                pixelOffset: new Cesium.Cartesian2(0, -10),
+                scaleByDistance: new Cesium.NearFarScalar(50000, 1.5, 5000000, 0.4),
+                translucencyByDistance: new Cesium.NearFarScalar(100000, 1.0, 5000000, 0.0)
+            }
+        });
+    });
+    
+    console.log('[Nuclear Globe] City markers loaded:', cities.length, 'cities');
+}
+
+// ============ 生成避难所标记 ============
+function generateShelterEntities() {
+    shelterEntities = [];
+    
+    for (const cityId in SHELTER_DATA) {
+        const city = SHELTER_DATA[cityId];
+        
+        city.shelters.forEach(shelter => {
+            const color = getTypeColor(shelter.type);
+            const entity = viewer.entities.add({
+                position: Cesium.Cartesian3.fromDegrees(
+                    shelter.position[0],
+                    shelter.position[1],
+                    100
+                ),
+                billboard: {
+                    image: createMarkerImage(color),
+                    scale: 0.8,
+                    verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                    heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND
+                },
+                label: {
+                    text: shelter.name,
+                    font: 'bold 13px "Microsoft YaHei", sans-serif',
+                    fillColor: Cesium.Color.WHITE,
+                    outlineColor: Cesium.Color.BLACK,
+                    outlineWidth: 3,
+                    style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                    verticalOrigin: Cesium.VerticalOrigin.TOP,
+                    pixelOffset: new Cesium.Cartesian2(0, -35),
+                    show: false
+                },
+                properties: {
+                    shelter: shelter,
+                    city: city.name,
+                    cityId: cityId
+                }
+            });
+            
+            shelterEntities.push({
+                entity: entity,
+                shelter: shelter,
+                city: city,
+                cityId: cityId
+            });
+        });
+    }
+    
+    console.log('[Nuclear Globe] Generated', shelterEntities.length, 'shelter markers');
+}
+
+// ============ 创建避难所标记图像 ============
+function createMarkerImage(color) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 36;
+    canvas.height = 48;
+    const ctx = canvas.getContext('2d');
+    
+    // 发光效果
+    const gradient = ctx.createRadialGradient(18, 18, 0, 18, 18, 18);
+    gradient.addColorStop(0, color + 'ff');
+    gradient.addColorStop(0.5, color + '80');
+    gradient.addColorStop(1, color + '00');
+    
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(18, 18, 18, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // 圆点主体
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(18, 18, 8, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // 白色边框
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(18, 18, 8, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    // 尖角指示器
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(18, 26);
+    ctx.lineTo(12, 40);
+    ctx.lineTo(18, 34);
+    ctx.lineTo(24, 40);
+    ctx.closePath();
+    ctx.fill();
+    
+    return canvas.toDataURL();
+}
+
+// ============ UI 函数 ============
+function populateCityList() {
+    const cityListEl = document.getElementById('cityList');
+    if (!cityListEl) return;
+    
+    cityListEl.innerHTML = '';
+    
+    const majorCities = ['beijing', 'shanghai', 'guangzhou', 'shenzhen', 'chengdu', 'wuhan', 'xian', 'hangzhou', 'nanjing'];
+    
+    majorCities.forEach(cityId => {
+        if (SHELTER_DATA[cityId]) {
+            const city = SHELTER_DATA[cityId];
+            const cityItem = document.createElement('div');
+            cityItem.className = 'city-item';
+            cityItem.innerHTML = `
+                <span>${city.name}</span>
+                <span class="count">${city.shelters.length}个</span>
+            `;
+            cityItem.onclick = () => flyToCity(cityId);
+            cityListEl.appendChild(cityItem);
+        }
+    });
+}
+
+function updateStats() {
+    const stats = calculateStats();
+    const totalBunkersEl = document.getElementById('totalBunkers');
+    const totalCapacityEl = document.getElementById('totalCapacity');
+    
+    if (totalBunkersEl) totalBunkersEl.textContent = stats.totalBunkers;
+    if (totalCapacityEl) totalCapacityEl.textContent = Math.floor(stats.totalCapacity / 10000) + '万+';
+}
+
+function calculateStats() {
+    let totalBunkers = 0;
+    let totalCapacity = 0;
+    
+    for (const cityId in SHELTER_DATA) {
+        const city = SHELTER_DATA[cityId];
+        totalBunkers += city.shelters.length;
+        city.shelters.forEach(shelter => {
+            totalCapacity += parseInt(shelter.capacity) || 10000;
+        });
+    }
+    
+    return { totalBunkers, totalCapacity };
+}
+
+// ============ 相机控制 ============
+function flyToChina() {
+    viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(105.0, 35.0, 6000000),
+        orientation: {
+            heading: Cesium.Math.toRadians(0),
+            pitch: Cesium.Math.toRadians(-55),
+            roll: 0
+        },
+        duration: 2.5
+    });
+}
+
+function flyToCity(cityId) {
+    const city = SHELTER_DATA[cityId];
+    if (!city) return;
+    
+    currentCity = cityId;
+    
+    viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(
+            city.center[0],
+            city.center[1],
+            50000
+        ),
+        orientation: {
+            heading: Cesium.Math.toRadians(0),
+            pitch: Cesium.Math.toRadians(-45),
+            roll: 0
+        },
+        duration: 2,
+        complete: () => {
+            showCityLabels(cityId);
+        }
+    });
+}
+
+function showCityLabels(cityId) {
+    shelterEntities.forEach(item => {
+        if (item.cityId === cityId) {
+            item.entity.label.show = true;
+        } else {
+            item.entity.label.show = false;
+        }
+    });
+}
+
+// ============ 事件处理 ============
+function setupEventHandlers() {
+    // 点击事件
+    viewer.screenSpaceEventHandler.setInputAction(function(movement) {
+        const pickedObject = viewer.scene.pick(movement.position);
+        
+        if (Cesium.defined(pickedObject) && pickedObject.id) {
+            const entity = pickedObject.id;
+            if (entity.properties && entity.properties.shelter) {
+                const shelter = entity.properties.shelter.getValue();
+                const cityName = entity.properties.city.getValue();
+                showShelterInfo(shelter, cityName);
+            }
+        } else {
+            closeInfoPanel();
+        }
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    
+    // 相机变化监听
+    viewer.camera.changed.addEventListener(function() {
+        const height = viewer.camera.positionCartographic.height;
+        
+        shelterEntities.forEach(item => {
+            if (height < 80000 && currentCity && item.cityId === currentCity) {
+                item.entity.label.show = true;
+            } else {
+                item.entity.label.show = false;
+            }
+        });
+    });
+    
+    // 键盘快捷键
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeInfoPanel();
+            closeGuide();
+        }
+        if (e.key === 'h' || e.key === 'H') {
+            openGuide();
+        }
+        if (e.key === 'c' || e.key === 'C') {
+            flyToChina();
+        }
+    });
+    
+    // 搜索框回车事件
+    const searchInput = document.getElementById('citySearch');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchCity();
+            }
+        });
+    }
+}
+
+function showShelterInfo(shelter, cityName) {
+    const panel = document.getElementById('infoPanel');
+    if (!panel) return;
+    
+    document.getElementById('infoTitle').textContent = shelter.name;
+    
+    const typeLabel = getTypeLabel(shelter.type);
+    const typeColor = getTypeColor(shelter.type);
+    document.getElementById('infoType').innerHTML = `
+        <span class="badge" style="background: ${typeColor}30; color: ${typeColor}; border: 1px solid ${typeColor}; padding: 4px 12px; border-radius: 12px; font-size: 12px;">
+            ${typeLabel}
+        </span>
+    `;
+    
+    document.getElementById('infoAddress').textContent = shelter.address || '暂无详细地址';
+    document.getElementById('infoCapacity').textContent = typeof shelter.capacity === 'number' ? shelter.capacity.toLocaleString() + ' 人' : shelter.capacity;
+    document.getElementById('infoLevel').textContent = shelter.level || '核6级';
+    document.getElementById('infoFacilities').textContent = shelter.facilities || '通风系统、应急供电、滤毒装置';
+    document.getElementById('infoAccess').textContent = shelter.access || '可通过地铁或主要道路到达';
+    
+    panel.classList.add('active');
+    
+    // 聚焦到避难所
+    viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(
+            shelter.position[0],
+            shelter.position[1],
+            8000
+        ),
+        orientation: {
+            heading: Cesium.Math.toRadians(0),
+            pitch: Cesium.Math.toRadians(-45),
+            roll: 0
+        },
+        duration: 1.5
+    });
+}
+
+function closeInfoPanel() {
+    const panel = document.getElementById('infoPanel');
+    if (panel) panel.classList.remove('active');
+}
+
+function searchCity() {
+    const query = document.getElementById('citySearch').value.trim();
+    if (!query) return;
+    
+    // 在避难所数据中搜索
+    for (const cityId in SHELTER_DATA) {
+        if (SHELTER_DATA[cityId].name.includes(query)) {
+            flyToCity(cityId);
+            return;
+        }
+    }
+    
+    alert('未找到该城市，请尝试输入"北京"、"上海"、"广州"等');
+}
+
+// ============ 辅助函数 ============
+function getTypeColor(type) {
+    const colors = {
+        'bunker': '#ff4757',
+        'shelter': '#ffa502',
+        'metro': '#2ed573',
+        'underground': '#3742fa'
+    };
+    return colors[type] || '#ffa502';
+}
+
+function getTypeLabel(type) {
+    const labels = {
+        'bunker': '核掩体',
+        'shelter': '人防工程',
+        'metro': '地铁/地下通道',
+        'underground': '地下设施'
+    };
+    return labels[type] || '人防工程';
+}
+
+function openGuide() {
+    const modal = document.getElementById('guideModal');
+    if (modal) modal.classList.add('active');
+}
+
+function closeGuide() {
+    const modal = document.getElementById('guideModal');
+    if (modal) modal.classList.remove('active');
+}
+
+// ============ 页面加载初始化 ============
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('[Nuclear Globe] DOM loaded, initializing v3.0...');
+    
+    // 检查 Cesium 是否加载
+    if (typeof Cesium === 'undefined') {
+        console.error('[Nuclear Globe] Cesium library not loaded!');
+        document.getElementById('loading').innerHTML = '<p style="color: #ff4757;">地图库加载失败，请刷新页面重试</p>';
+        return;
+    }
+    
+    initGlobe();
+});

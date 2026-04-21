@@ -1,0 +1,12 @@
+{
+  "name": "urhox-project-template",
+  "name_zh": "UrhoX 项目模板",
+  "category": "开发工具",
+  "tags": ["template", "framework", "urhox", "lua"],
+  "description": "可直接复制使用的 UrhoX Lua 项目模板，提供了新建 UrhoX 项目时所需的核心基础设施，包括配置读写、关卡/场景管理、UI 窗口栈、Mod 热加载和日志调试系统。",
+  "author": "OpenClaw",
+  "version": "1.0.0",
+  "min_engine_version": "1.0.0",
+  "entry": "scripts/main.lua",
+  "engine": "UrhoX"
+}

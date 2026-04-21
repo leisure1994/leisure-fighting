@@ -1,0 +1,12 @@
+{
+  "name": "rbfx-framework",
+  "name_zh": "rbfx 现代框架",
+  "category": "开发工具",
+  "tags": ["rbfx", "framework", "modern", "urhox"],
+  "description": "基于 rbfx（现代 Urho3D 分支，C++17）的 Lua/UrhoX 项目框架。提取了 rbfx 示例项目中真正对 Lua 开发有用的模板与工具逻辑，让你以现代工程化的方式启动 UrhoX 项目。",
+  "author": "OpenClaw",
+  "version": "1.0.0",
+  "min_engine_version": "1.0.0",
+  "entry": "scripts/main.lua",
+  "engine": "UrhoX"
+}

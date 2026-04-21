@@ -1,0 +1,12 @@
+{
+  "name": "urhox-camera-controller",
+  "name_zh": "UrhoX 镜头控制器",
+  "category": "开发工具",
+  "tags": ["camera", "urhox", "lua", "2d", "3d", "pixel-perfect", "follow", "orbit"],
+  "description": "UrhoX 全功能镜头控制系统，涵盖2D像素/RPG游戏的像素级跟随、房间过渡、屏幕震动、视差背景，以及3D游戏的平滑跟随、肩越视角、轨道相机、FPS与碰撞避障",
+  "author": "OpenClaw",
+  "version": "1.0.0",
+  "min_engine_version": "1.0.0",
+  "entry": "scripts/main.lua",
+  "engine": "UrhoX"
+}

@@ -1,0 +1,71 @@
+{
+  "city": "南昌",
+  "shelters": [
+    {
+      "id": "nc_001",
+      "name": "南昌火车站人防工程",
+      "address": "南昌市西湖区站前路",
+      "district": "西湖区",
+      "type": "人防工程",
+      "coordinates": [115.919, 28.677],
+      "map_search": "南昌站地下广场",
+      "capacity": 4000,
+      "status": "active"
+    },
+    {
+      "id": "nc_002",
+      "name": "八一广场人防工程",
+      "address": "南昌市东湖区中山路",
+      "district": "东湖区",
+      "type": "人防工程",
+      "coordinates": [115.889, 28.678],
+      "map_search": "八一广场地下",
+      "capacity": 5000,
+      "status": "active"
+    },
+    {
+      "id": "nc_003",
+      "name": "北京西路地下人防工程",
+      "address": "南昌市东湖区北京西路口",
+      "district": "东湖区",
+      "type": "防空洞",
+      "coordinates": [115.888, 28.680],
+      "map_search": "北京西路地下人防工程纳凉点",
+      "capacity": 2000,
+      "status": "active"
+    },
+    {
+      "id": "nc_004",
+      "name": "红谷滩世纪中央城人防工程",
+      "address": "南昌市红谷滩区会展路",
+      "district": "红谷滩区",
+      "type": "人防工程",
+      "coordinates": [115.865, 28.688],
+      "map_search": "世纪中央城地下人防工程",
+      "capacity": 3000,
+      "status": "active"
+    },
+    {
+      "id": "nc_005",
+      "name": "南昌西站人防工程",
+      "address": "南昌市红谷滩区西站大街",
+      "district": "红谷滩区",
+      "type": "人防工程",
+      "coordinates": [115.815, 28.615],
+      "map_search": "南昌西站地下广场",
+      "capacity": 6000,
+      "status": "active"
+    },
+    {
+      "id": "nc_006",
+      "name": "新建区当代国际满庭春人防工程",
+      "address": "南昌市新建区长征路",
+      "district": "新建区",
+      "type": "人防工程",
+      "coordinates": [115.830, 28.720],
+      "map_search": "当代国际满庭春地下人防工程",
+      "capacity": 2500,
+      "status": "active"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "skills": {
+    "xiaohongshu-writer-expert": {
+      "name": "小红书爆款图文写作专家",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=xiaohongshu-writer-expert",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "xhs-suggest-keywords": {
+      "name": "小红书搜索建议关键词收集工具",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=xhs-suggest-keywords",
+      "source": "skillhub",
+      "version": "1.0.1"
+    },
+    "xhs-full-operation-workflow": {
+      "name": "小红书全链路运营全流程",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=xhs-full-operation-workflow",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "xiaohongshu-tool": {
+      "name": "小红书商业洞察与竞品分析助手",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=xiaohongshu-tool",
+      "source": "skillhub",
+      "version": "1.0.2"
+    },
+    "humanizer": {
+      "name": "Humanizer",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=humanizer",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "evolver": {
+      "name": "Evolver",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=evolver",
+      "source": "skillhub",
+      "version": "1.31.0"
+    }
+  }
+}

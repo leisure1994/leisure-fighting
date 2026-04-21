@@ -1,0 +1,71 @@
+{
+  "city": "昆明",
+  "shelters": [
+    {
+      "id": "km_001",
+      "name": "昆明火车站人防工程",
+      "address": "昆明市官渡区北京路",
+      "district": "官渡区",
+      "type": "人防工程",
+      "coordinates": [102.722, 25.016],
+      "map_search": "昆明站地下广场",
+      "capacity": 4000,
+      "status": "active"
+    },
+    {
+      "id": "km_002",
+      "name": "东风广场人防工程",
+      "address": "昆明市盘龙区东风东路",
+      "district": "盘龙区",
+      "type": "人防工程",
+      "coordinates": [102.717, 25.037],
+      "map_search": "东风广场地下",
+      "capacity": 3500,
+      "status": "active"
+    },
+    {
+      "id": "km_003",
+      "name": "翠湖防空洞",
+      "address": "昆明市五华区翠湖南路",
+      "district": "五华区",
+      "type": "防空洞",
+      "coordinates": [102.705, 25.055],
+      "map_search": "翠湖公园地下防空设施",
+      "capacity": 2000,
+      "status": "active"
+    },
+    {
+      "id": "km_004",
+      "name": "金马碧鸡坊人防工程",
+      "address": "昆明市西山区金碧路",
+      "district": "西山区",
+      "type": "人防工程",
+      "coordinates": [102.711, 25.032],
+      "map_search": "金马碧鸡坊地下商业街",
+      "capacity": 2500,
+      "status": "active"
+    },
+    {
+      "id": "km_005",
+      "name": "南屏街人防工程",
+      "address": "昆明市五华区南屏街",
+      "district": "五华区",
+      "type": "人防工程",
+      "coordinates": [102.709, 25.037],
+      "map_search": "南屏街地下步行街",
+      "capacity": 3000,
+      "status": "active"
+    },
+    {
+      "id": "km_006",
+      "name": "长水国际机场人防工程",
+      "address": "昆明市官渡区长水村",
+      "district": "官渡区",
+      "type": "人防工程",
+      "coordinates": [102.917, 25.106],
+      "map_search": "昆明长水国际机场地下",
+      "capacity": 5000,
+      "status": "active"
+    }
+  ]
+}

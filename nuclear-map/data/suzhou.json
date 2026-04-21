@@ -1,0 +1,71 @@
+{
+  "city": "苏州",
+  "shelters": [
+    {
+      "id": "sz_001",
+      "name": "苏州火车站人防工程",
+      "address": "苏州市姑苏区苏站路",
+      "district": "姑苏区",
+      "type": "人防工程",
+      "coordinates": [120.608, 31.337],
+      "map_search": "苏州站地下广场",
+      "capacity": 5000,
+      "status": "active"
+    },
+    {
+      "id": "sz_002",
+      "name": "观前街地下人防工程",
+      "address": "苏州市姑苏区观前街",
+      "district": "姑苏区",
+      "type": "人防工程",
+      "coordinates": [120.628, 31.315],
+      "map_search": "观前街地下商城",
+      "capacity": 3500,
+      "status": "active"
+    },
+    {
+      "id": "sz_003",
+      "name": "石路商圈人防工程",
+      "address": "苏州市姑苏区石路",
+      "district": "姑苏区",
+      "type": "人防工程",
+      "coordinates": [120.598, 31.318],
+      "map_search": "石路地下商业街",
+      "capacity": 3000,
+      "status": "active"
+    },
+    {
+      "id": "sz_004",
+      "name": "金鸡湖广场人防工程",
+      "address": "苏州市工业园区星港街",
+      "district": "工业园区",
+      "type": "人防工程",
+      "coordinates": [120.710, 31.316],
+      "map_search": "金鸡湖地下停车场",
+      "capacity": 4000,
+      "status": "active"
+    },
+    {
+      "id": "sz_005",
+      "name": "虎丘人防工程",
+      "address": "苏州市姑苏区虎丘路",
+      "district": "姑苏区",
+      "type": "防空洞",
+      "coordinates": [120.590, 31.340],
+      "map_search": "虎丘风景区地下设施",
+      "capacity": 2500,
+      "status": "active"
+    },
+    {
+      "id": "sz_006",
+      "name": "园区凤凰广场人防工程",
+      "address": "苏州市工业园区星海街",
+      "district": "工业园区",
+      "type": "人防工程",
+      "coordinates": [120.735, 31.320],
+      "map_search": "凤凰广场地下停车场",
+      "capacity": 2800,
+      "status": "active"
+    }
+  ]
+}

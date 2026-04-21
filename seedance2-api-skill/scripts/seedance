@@ -1,0 +1,844 @@
+#!/bin/bash
+#
+# Seedance 2.0 API CLI Tool
+# Usage: seedance [command] [options]
+#
+
+set -e
+
+# Configuration
+ARK_BASE_URL="https://ark.cn-beijing.volces.com/api/v3"
+CONFIG_FILE="${HOME}/.seedance_config.json"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Get API Key
+get_api_key() {
+    if [ -n "$ARK_API_KEY" ]; then
+        echo "$ARK_API_KEY"
+    elif [ -f "$CONFIG_FILE" ]; then
+        jq -r '.api_key // empty' "$CONFIG_FILE" 2>/dev/null
+    else
+        echo ""
+    fi
+}
+
+# Check API Key
+check_api_key() {
+    local api_key=$(get_api_key)
+    if [ -z "$api_key" ]; then
+        echo -e "${RED}Error: API Key not found${NC}"
+        echo "Please set ARK_API_KEY environment variable or create $CONFIG_FILE"
+        echo "Get your API Key from: https://console.volcengine.com/ark/region:ark+cn-beijing/apikey"
+        exit 1
+    fi
+    echo "$api_key"
+}
+
+# Help message
+show_help() {
+    cat << EOF
+Seedance 2.0 API CLI Tool
+火山引擎视频生成模型命令行工具
+
+Usage: seedance <command> [options]
+
+Commands:
+  video [prompt]       视频生成（文生/图生视频）
+  multi               多模态参考生成视频
+  edit                视频编辑
+  extend              视频延长/续写
+  avatar [asset-id]   虚拟人像生成视频
+  status [task-id]    查询任务状态
+  list-models         列出可用模型
+
+Options:
+  --help, -h          显示帮助
+  --version, -v       显示版本
+
+Examples:
+  seedance video "夕阳下的海滩"
+  seedance video "让画面动起来" --image input.jpg
+  seedance edit "替换视频中的产品" --video input.mp4 --image new.jpg
+  seedance status task-xxx
+
+For command-specific help:
+  seedance <command> --help
+EOF
+}
+
+# Video generation command
+video_command() {
+    local prompt=""
+    local model="doubao-seedance-2-0-260128"
+    local duration=5
+    local ratio="16:9"
+    local output=""
+    local generate_audio=true
+    local watermark=true
+    local web_search=false
+    local image=""
+    local image_role="reference_image"
+    local image_start=""
+    local image_end=""
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --model|-m)
+                if [ "$2" = "fast" ]; then
+                    model="doubao-seedance-2-0-fast-260128"
+                else
+                    model="$2"
+                fi
+                shift 2
+                ;;
+            --duration|-d)
+                duration="$2"
+                shift 2
+                ;;
+            --ratio|-r)
+                ratio="$2"
+                shift 2
+                ;;
+            --output|-o)
+                output="$2"
+                shift 2
+                ;;
+            --image|-i)
+                image="$2"
+                shift 2
+                ;;
+            --image-start)
+                image_start="$2"
+                shift 2
+                ;;
+            --image-end)
+                image_end="$2"
+                shift 2
+                ;;
+            --role)
+                image_role="$2"
+                shift 2
+                ;;
+            --no-audio)
+                generate_audio=false
+                shift
+                ;;
+            --no-watermark)
+                watermark=false
+                shift
+                ;;
+            --web-search)
+                web_search=true
+                shift
+                ;;
+            --help|-h)
+                cat << EOF
+Usage: seedance video [prompt] [options]
+
+Options:
+  --model, -m         模型: doubao-seedance-2-0-260128 或 fast
+  --duration, -d      时长秒数: 5/10/11 (default: 5)
+  --ratio, -r         比例: 16:9/9:16/1:1/adaptive (default: 16:9)
+  --output, -o        输出文件名
+  --image, -i         参考图片路径/URL
+  --image-start       首帧图片路径
+  --image-end         尾帧图片路径
+  --role              图片角色: reference_image/first_frame/last_frame
+  --no-audio          不生成音频
+  --no-watermark      不显示水印
+  --web-search        开启联网搜索
+
+Examples:
+  seedance video "夕阳下的海滩"
+  seedance video "科幻城市" --duration 10 --ratio 9:16
+  seedance video "让画面动起来" --image photo.jpg
+  seedance video "从图片1到图片2" --image-start a.jpg --image-end b.jpg
+EOF
+                return
+                ;;
+            *)
+                if [ -z "$prompt" ]; then
+                    prompt="$1"
+                fi
+                shift
+                ;;
+        esac
+    done
+
+    if [ -z "$prompt" ]; then
+        echo -e "${YELLOW}请输入视频描述:${NC}"
+        read prompt
+    fi
+
+    local api_key=$(check_api_key)
+
+    # Build content array
+    local content_items='[{"type": "text", "text": "'"$prompt"'"}]'
+    
+    # Add images if provided
+    if [ -n "$image" ]; then
+        if [ -f "$image" ]; then
+            # Local file, need to upload first (simplified - assume URL for now)
+            echo -e "${YELLOW}Note: Local files should be uploaded to accessible URL first${NC}"
+        fi
+        content_items=$(echo "$content_items" | jq '. + [{"type": "image_url", "image_url": {"url": "'"$image"'"}, "role": "'"$image_role"'"}]')
+    fi
+
+    if [ -n "$image_start" ]; then
+        content_items=$(echo "$content_items" | jq '. + [{"type": "image_url", "image_url": {"url": "'"$image_start"'"}, "role": "first_frame"}]')
+    fi
+
+    if [ -n "$image_end" ]; then
+        content_items=$(echo "$content_items" | jq '. + [{"type": "image_url", "image_url": {"url": "'"$image_end"'"}, "role": "last_frame"}]')
+    fi
+
+    # Build request
+    local request_body=$(jq -n \
+        --arg model "$model" \
+        --argjson content "$content_items" \
+        --argjson generate_audio "$generate_audio" \
+        --arg ratio "$ratio" \
+        --argjson duration "$duration" \
+        --argjson watermark "$watermark" \
+        '{
+            model: $model,
+            content: $content,
+            generate_audio: $generate_audio,
+            ratio: $ratio,
+            duration: $duration,
+            watermark: $watermark
+        }')
+
+    # Add web search tool if enabled
+    if [ "$web_search" = true ]; then
+        request_body=$(echo "$request_body" | jq '. + {tools: [{type: "web_search"}]}')
+    fi
+
+    echo -e "${GREEN}提交视频生成任务...${NC}"
+    echo -e "${BLUE}模型: $model${NC}"
+    echo -e "${BLUE}时长: ${duration}s${NC}"
+    echo -e "${BLUE}比例: $ratio${NC}"
+
+    local response=$(curl -s -X POST "${ARK_BASE_URL}/content_generation/tasks" \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer ${api_key}" \
+        -d "$request_body" 2>/dev/null)
+
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Error: 请求失败${NC}"
+        exit 1
+    fi
+
+    local task_id=$(echo "$response" | jq -r '.id // empty' 2>/dev/null)
+    local error_msg=$(echo "$response" | jq -r '.error.message // empty' 2>/dev/null)
+
+    if [ -n "$error_msg" ] && [ "$error_msg" != "null" ]; then
+        echo -e "${RED}Error: $error_msg${NC}"
+        echo "$response" | jq . 2>/dev/null || echo "$response"
+        exit 1
+    fi
+
+    if [ -n "$task_id" ] && [ "$task_id" != "null" ]; then
+        echo -e "${GREEN}✓ 任务已提交，ID: ${task_id}${NC}"
+        echo -e "${YELLOW}正在等待生成完成...${NC}"
+        poll_task_status "$api_key" "$task_id" "$output"
+    else
+        echo -e "${RED}Error: 任务提交失败${NC}"
+        echo "$response" | jq . 2>/dev/null || echo "$response"
+        exit 1
+    fi
+}
+
+# Poll task status
+poll_task_status() {
+    local api_key=$1
+    local task_id=$2
+    local output=$3
+    
+    local attempts=0
+    local max_attempts=120
+    
+    while [ $attempts -lt $max_attempts ]; do
+        sleep 10
+        
+        local status_response=$(curl -s "${ARK_BASE_URL}/content_generation/tasks/${task_id}" \
+            -H "Authorization: Bearer ${api_key}" 2>/dev/null)
+        
+        local status=$(echo "$status_response" | jq -r '.status // empty' 2>/dev/null)
+        local video_url=$(echo "$status_response" | jq -r '.content.video_url // empty' 2>/dev/null)
+        local tokens=$(echo "$status_response" | jq -r '.usage.completion_tokens // empty' 2>/dev/null)
+        local error_code=$(echo "$status_response" | jq -r '.error.code // empty' 2>/dev/null)
+        local error_msg=$(echo "$status_response" | jq -r '.error.message // empty' 2>/dev/null)
+        
+        if [ "$status" = "succeeded" ] && [ -n "$video_url" ] && [ "$video_url" != "null" ]; then
+            echo ""
+            echo -e "${GREEN}✓ 视频生成完成！${NC}"
+            echo -e "${BLUE}Token消耗: $tokens${NC}"
+            echo -e "${BLUE}视频URL: $video_url${NC}"
+            
+            if [ -n "$output" ]; then
+                echo -e "${GREEN}下载视频到 ${output}...${NC}"
+                curl -s -L "$video_url" -o "$output"
+                echo -e "${GREEN}✓ 已保存: ${output}${NC}"
+            else
+                # Generate default filename
+                output="seedance_${task_id}.mp4"
+                echo -e "${GREEN}下载视频到 ${output}...${NC}"
+                curl -s -L "$video_url" -o "$output"
+                echo -e "${GREEN}✓ 已保存: ${output}${NC}"
+            fi
+            return
+        elif [ "$status" = "failed" ]; then
+            echo ""
+            echo -e "${RED}✗ 视频生成失败${NC}"
+            if [ -n "$error_msg" ] && [ "$error_msg" != "null" ]; then
+                echo -e "${RED}错误码: $error_code${NC}"
+                echo -e "${RED}错误信息: $error_msg${NC}"
+            fi
+            exit 1
+        fi
+        
+        attempts=$((attempts + 1))
+        echo -n "."
+    done
+    
+    echo ""
+    echo -e "${YELLOW}等待超时，任务ID: ${task_id}${NC}"
+    echo "可通过以下命令查询状态:"
+    echo "  seedance status $task_id"
+}
+
+# Multi-modal command
+multi_command() {
+    local prompt=""
+    local model="doubao-seedance-2-0-260128"
+    local duration=5
+    local ratio="16:9"
+    local output=""
+    local images=()
+    local videos=()
+    local audios=()
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --text|-t)
+                prompt="$2"
+                shift 2
+                ;;
+            --model|-m)
+                model="$2"
+                shift 2
+                ;;
+            --duration|-d)
+                duration="$2"
+                shift 2
+                ;;
+            --ratio|-r)
+                ratio="$2"
+                shift 2
+                ;;
+            --output|-o)
+                output="$2"
+                shift 2
+                ;;
+            --image|-i)
+                images+=("$2")
+                shift 2
+                ;;
+            --video)
+                videos+=("$2")
+                shift 2
+                ;;
+            --audio|-a)
+                audios+=("$2")
+                shift 2
+                ;;
+            --help|-h)
+                cat << EOF
+Usage: seedance multi [options]
+
+Options:
+  --text, -t          文本提示词
+  --image, -i         参考图片（可多次使用）
+  --video             参考视频（可多次使用）
+  --audio, -a         参考音频（可多次使用）
+  --model, -m         模型ID
+  --duration, -d      时长秒数
+  --ratio, -r         视频比例
+  --output, -o        输出文件名
+
+Examples:
+  seedance multi --text "美妆广告" --image avatar.jpg --image product.jpg
+  seedance multi --text "舞蹈视频" --video dance.mp4 --audio music.mp3
+EOF
+                return
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+
+    if [ -z "$prompt" ]; then
+        echo -e "${YELLOW}请输入文本提示词:${NC}"
+        read prompt
+    fi
+
+    local api_key=$(check_api_key)
+
+    # Build content array
+    local content_items="["
+    content_items+='{"type": "text", "text": "'"$prompt"'"}'
+
+    # Add images
+    for img in "${images[@]}"; do
+        content_items+=', {"type": "image_url", "image_url": {"url": "'"$img"'"}, "role": "reference_image"}'
+    done
+
+    # Add videos
+    for vid in "${videos[@]}"; do
+        content_items+=', {"type": "video_url", "video_url": {"url": "'"$vid"'"}, "role": "reference_video"}'
+    done
+
+    # Add audios
+    for aud in "${audios[@]}"; do
+        content_items+=', {"type": "audio_url", "audio_url": {"url": "'"$aud"'"}, "role": "reference_audio"}'
+    done
+
+    content_items+="]"
+
+    local request_body=$(jq -n \
+        --arg model "$model" \
+        --argjson content "$content_items" \
+        --arg ratio "$ratio" \
+        --argjson duration "$duration" \
+        '{
+            model: $model,
+            content: $content,
+            generate_audio: true,
+            ratio: $ratio,
+            duration: $duration,
+            watermark: true
+        }')
+
+    echo -e "${GREEN}提交多模态视频生成任务...${NC}"
+
+    local response=$(curl -s -X POST "${ARK_BASE_URL}/content_generation/tasks" \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer ${api_key}" \
+        -d "$request_body" 2>/dev/null)
+
+    local task_id=$(echo "$response" | jq -r '.id // empty' 2>/dev/null)
+
+    if [ -n "$task_id" ] && [ "$task_id" != "null" ]; then
+        echo -e "${GREEN}✓ 任务已提交，ID: ${task_id}${NC}"
+        poll_task_status "$api_key" "$task_id" "$output"
+    else
+        echo -e "${RED}Error: 任务提交失败${NC}"
+        echo "$response" | jq . 2>/dev/null || echo "$response"
+        exit 1
+    fi
+}
+
+# Edit command
+edit_command() {
+    local prompt=""
+    local video=""
+    local image=""
+    local output=""
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --video|-v)
+                video="$2"
+                shift 2
+                ;;
+            --image|-i)
+                image="$2"
+                shift 2
+                ;;
+            --output|-o)
+                output="$2"
+                shift 2
+                ;;
+            --help|-h)
+                cat << EOF
+Usage: seedance edit [prompt] [options]
+
+Options:
+  --video, -v         待编辑视频路径/URL（必需）
+  --image, -i         参考图片路径/URL
+  --output, -o        输出文件名
+
+Examples:
+  seedance edit "将视频1中的香水换成面霜" --video input.mp4 --image cream.jpg
+  seedance edit "将面霜颜色改为白色" --video input.mp4
+  seedance edit "去除背景中的路人" --video input.mp4
+EOF
+                return
+                ;;
+            *)
+                if [ -z "$prompt" ]; then
+                    prompt="$1"
+                fi
+                shift
+                ;;
+        esac
+    done
+
+    if [ -z "$prompt" ]; then
+        echo -e "${YELLOW}请输入编辑指令:${NC}"
+        read prompt
+    fi
+
+    if [ -z "$video" ]; then
+        echo -e "${RED}Error: 必须提供 --video 参数${NC}"
+        exit 1
+    fi
+
+    local api_key=$(check_api_key)
+
+    local content_items='[{"type": "text", "text": "'"$prompt"'"}, {"type": "video_url", "video_url": {"url": "'"$video"'"}, "role": "reference_video"}]'
+
+    if [ -n "$image" ]; then
+        content_items=$(echo "$content_items" | jq '. + [{"type": "image_url", "image_url": {"url": "'"$image"'"}, "role": "reference_image"}]')
+    fi
+
+    local request_body=$(jq -n \
+        --arg model "doubao-seedance-2-0-260128" \
+        --argjson content "$content_items" \
+        '{
+            model: $model,
+            content: $content,
+            generate_audio: true,
+            ratio: "16:9",
+            duration: 5,
+            watermark: true
+        }')
+
+    echo -e "${GREEN}提交视频编辑任务...${NC}"
+
+    local response=$(curl -s -X POST "${ARK_BASE_URL}/content_generation/tasks" \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer ${api_key}" \
+        -d "$request_body" 2>/dev/null)
+
+    local task_id=$(echo "$response" | jq -r '.id // empty' 2>/dev/null)
+
+    if [ -n "$task_id" ] && [ "$task_id" != "null" ]; then
+        echo -e "${GREEN}✓ 任务已提交，ID: ${task_id}${NC}"
+        poll_task_status "$api_key" "$task_id" "$output"
+    else
+        echo -e "${RED}Error: 任务提交失败${NC}"
+        echo "$response" | jq . 2>/dev/null || echo "$response"
+        exit 1
+    fi
+}
+
+# Extend command
+extend_command() {
+    local prompt=""
+    local videos=()
+    local direction="append"
+    local output=""
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --video|-v)
+                videos+=("$2")
+                shift 2
+                ;;
+            --direction)
+                direction="$2"
+                shift 2
+                ;;
+            --output|-o)
+                output="$2"
+                shift 2
+                ;;
+            --help|-h)
+                cat << EOF
+Usage: seedance extend [prompt] [options]
+
+Options:
+  --video, -v         视频路径/URL（可多次使用，最多3个）
+  --direction         延长方向: append/prepend (default: append)
+  --output, -o        输出文件名
+
+Examples:
+  seedance extend "向后延长视频1" --video input.mp4
+  seedance extend "视频1接视频2接视频3" --video v1.mp4 --video v2.mp4 --video v3.mp4
+EOF
+                return
+                ;;
+            *)
+                if [ -z "$prompt" ]; then
+                    prompt="$1"
+                fi
+                shift
+                ;;
+        esac
+    done
+
+    if [ -z "$prompt" ]; then
+        echo -e "${YELLOW}请输入延长指令:${NC}"
+        read prompt
+    fi
+
+    if [ ${#videos[@]} -eq 0 ]; then
+        echo -e "${RED}Error: 必须提供至少一个 --video 参数${NC}"
+        exit 1
+    fi
+
+    local api_key=$(check_api_key)
+
+    local content_items='[{"type": "text", "text": "'"$prompt"'"}]'
+
+    for vid in "${videos[@]}"; do
+        content_items=$(echo "$content_items" | jq '. + [{"type": "video_url", "video_url": {"url": "'"$vid"'"}, "role": "reference_video"}]')
+    done
+
+    local request_body=$(jq -n \
+        --arg model "doubao-seedance-2-0-260128" \
+        --argjson content "$content_items" \
+        '{
+            model: $model,
+            content: $content,
+            generate_audio: true,
+            ratio: "16:9",
+            duration: 8,
+            watermark: true
+        }')
+
+    echo -e "${GREEN}提交视频延长任务...${NC}"
+
+    local response=$(curl -s -X POST "${ARK_BASE_URL}/content_generation/tasks" \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer ${api_key}" \
+        -d "$request_body" 2>/dev/null)
+
+    local task_id=$(echo "$response" | jq -r '.id // empty' 2>/dev/null)
+
+    if [ -n "$task_id" ] && [ "$task_id" != "null" ]; then
+        echo -e "${GREEN}✓ 任务已提交，ID: ${task_id}${NC}"
+        poll_task_status "$api_key" "$task_id" "$output"
+    else
+        echo -e "${RED}Error: 任务提交失败${NC}"
+        echo "$response" | jq . 2>/dev/null || echo "$response"
+        exit 1
+    fi
+}
+
+# Avatar command
+avatar_command() {
+    local asset_id=$1
+    local prompt=$2
+    local output=""
+    local images=()
+
+    shift 2
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --output|-o)
+                output="$2"
+                shift 2
+                ;;
+            --image|-i)
+                images+=("$2")
+                shift 2
+                ;;
+            --help|-h)
+                cat << EOF
+Usage: seedance avatar [asset-id] [prompt] [options]
+
+Options:
+  --output, -o        输出文件名
+  --image, -i         附加参考图片
+
+Examples:
+  seedance avatar "asset-xxx" "美妆博主介绍产品"
+  seedance avatar "asset-xxx" "博主展示图片1中的产品" --image product.jpg
+
+查看虚拟人像库:
+  https://console.volcengine.com/ark/assets
+EOF
+                return
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+
+    if [ -z "$asset_id" ] || [ -z "$prompt" ]; then
+        echo -e "${RED}Usage: seedance avatar [asset-id] [prompt]${NC}"
+        exit 1
+    fi
+
+    local api_key=$(check_api_key)
+
+    local content_items='[{"type": "text", "text": "'"$prompt"'"}, {"type": "image_url", "image_url": {"url": "asset://'"$asset_id"'"}, "role": "reference_image"}]'
+
+    for img in "${images[@]}"; do
+        content_items=$(echo "$content_items" | jq '. + [{"type": "image_url", "image_url": {"url": "'"$img"'"}, "role": "reference_image"}]')
+    done
+
+    local request_body=$(jq -n \
+        --arg model "doubao-seedance-2-0-260128" \
+        --argjson content "$content_items" \
+        '{
+            model: $model,
+            content: $content,
+            generate_audio: true,
+            ratio: "adaptive",
+            duration: 11,
+            watermark: true
+        }')
+
+    echo -e "${GREEN}提交虚拟人像视频生成任务...${NC}"
+    echo -e "${BLUE}使用虚拟人像: $asset_id${NC}"
+
+    local response=$(curl -s -X POST "${ARK_BASE_URL}/content_generation/tasks" \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer ${api_key}" \
+        -d "$request_body" 2>/dev/null)
+
+    local task_id=$(echo "$response" | jq -r '.id // empty' 2>/dev/null)
+
+    if [ -n "$task_id" ] && [ "$task_id" != "null" ]; then
+        echo -e "${GREEN}✓ 任务已提交，ID: ${task_id}${NC}"
+        poll_task_status "$api_key" "$task_id" "$output"
+    else
+        echo -e "${RED}Error: 任务提交失败${NC}"
+        echo "$response" | jq . 2>/dev/null || echo "$response"
+        exit 1
+    fi
+}
+
+# Status command
+status_command() {
+    local task_id=$1
+
+    if [ -z "$task_id" ]; then
+        echo -e "${YELLOW}请输入任务ID:${NC}"
+        read task_id
+    fi
+
+    local api_key=$(check_api_key)
+
+    echo -e "${GREEN}查询任务状态...${NC}"
+
+    local response=$(curl -s "${ARK_BASE_URL}/content_generation/tasks/${task_id}" \
+        -H "Authorization: Bearer ${api_key}" 2>/dev/null)
+
+    local status=$(echo "$response" | jq -r '.status // empty' 2>/dev/null)
+    local video_url=$(echo "$response" | jq -r '.content.video_url // empty' 2>/dev/null)
+    local tokens=$(echo "$response" | jq -r '.usage.completion_tokens // empty' 2>/dev/null)
+
+    echo -e "${BLUE}任务ID: $task_id${NC}"
+    echo -e "${BLUE}状态: $status${NC}"
+
+    if [ "$status" = "succeeded" ]; then
+        echo -e "${GREEN}✓ 任务完成${NC}"
+        echo -e "${BLUE}视频URL: $video_url${NC}"
+        echo -e "${BLUE}Token消耗: $tokens${NC}"
+    elif [ "$status" = "failed" ]; then
+        echo -e "${RED}✗ 任务失败${NC}"
+    fi
+
+    echo ""
+    echo "$response" | jq . 2>/dev/null || echo "$response"
+}
+
+# List models command
+list_models_command() {
+    echo -e "${GREEN}Seedance 2.0 可用模型${NC}"
+    echo ""
+    echo "| 模型名称 | 模型ID | 说明 |"
+    echo "|----------|--------|------|"
+    echo "| Seedance 2.0 | doubao-seedance-2-0-260128 | 最高质量 |"
+    echo "| Seedance 2.0 Fast | doubao-seedance-2-0-fast-260128 | 更快更省成本 |"
+    echo ""
+    echo -e "${YELLOW}使用 --model fast 可快速切换到 Fast 版本${NC}"
+}
+
+# Status overview command
+status_overview_command() {
+    local api_key=$(check_api_key)
+    
+    echo -e "${GREEN}Seedance 2.0 API 状态${NC}"
+    echo "=================="
+    echo "API Key: ${api_key:0:10}..."
+    echo "Base URL: ${ARK_BASE_URL}"
+    echo ""
+    echo -e "${YELLOW}可用命令:${NC}"
+    echo "  video   - 视频生成（文生/图生）"
+    echo "  multi   - 多模态参考生成"
+    echo "  edit    - 视频编辑"
+    echo "  extend  - 视频延长/续写"
+    echo "  avatar  - 虚拟人像生成"
+    echo "  status  - 查询任务状态"
+    echo ""
+    echo -e "${YELLOW}定价参考:${NC}"
+    echo "  Seedance 2.0: 46元/百万tokens"
+    echo "  Seedance 2.0 Fast: 28元/百万tokens"
+    echo "  约15秒视频 ≈ 15元"
+}
+
+# Main
+main() {
+    if [ $# -eq 0 ]; then
+        show_help
+        exit 0
+    fi
+
+    local command=$1
+    shift
+
+    case $command in
+        video)
+            video_command "$@"
+            ;;
+        multi)
+            multi_command "$@"
+            ;;
+        edit)
+            edit_command "$@"
+            ;;
+        extend)
+            extend_command "$@"
+            ;;
+        avatar)
+            avatar_command "$@"
+            ;;
+        status)
+            status_command "$@"
+            ;;
+        list-models)
+            list_models_command
+            ;;
+        status-overview)
+            status_overview_command
+            ;;
+        --help|-h|help)
+            show_help
+            ;;
+        --version|-v)
+            echo "seedance-cli v1.0.0"
+            ;;
+        *)
+            echo -e "${RED}Unknown command: $command${NC}"
+            show_help
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"

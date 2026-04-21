@@ -1,0 +1,12 @@
+{
+  "name": "urhox-joystick",
+  "name_zh": "UrhoX 摇杆输入",
+  "category": "开发工具",
+  "tags": ["input", "joystick", "mobile", "urhox"],
+  "description": "适用于 UrhoX 引擎的纯 Lua 摇杆输入模块，提取自 Urho3D 官方摇杆示例并进行了跨平台封装。",
+  "author": "OpenClaw",
+  "version": "1.0.0",
+  "min_engine_version": "1.0.0",
+  "entry": "scripts/main.lua",
+  "engine": "UrhoX"
+}

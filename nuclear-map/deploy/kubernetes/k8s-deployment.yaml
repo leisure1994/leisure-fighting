@@ -1,0 +1,183 @@
+# Kubernetes 部署配置
+# 适用于大规模生产环境
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nuclear-map
+  namespace: default
+  labels:
+    app: nuclear-map
+    version: v1
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: nuclear-map
+  template:
+    metadata:
+      labels:
+        app: nuclear-map
+        version: v1
+    spec:
+      containers:
+        - name: nuclear-map
+          image: nuclear-map:latest
+          ports:
+            - containerPort: 80
+              name: http
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /nuclear-map/health
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /nuclear-map/health
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: data-volume
+              mountPath: /usr/share/nginx/html/nuclear-map/data
+            - name: ssl-volume
+              mountPath: /etc/nginx/ssl
+              readOnly: true
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: nuclear-map-data
+        - name: ssl-volume
+          secret:
+            secretName: nuclear-map-ssl
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - nuclear-map
+                topologyKey: kubernetes.io/hostname
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nuclear-map-data
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nuclear-map
+  namespace: default
+  labels:
+    app: nuclear-map
+spec:
+  type: ClusterIP
+  selector:
+    app: nuclear-map
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nuclear-map
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+spec:
+  tls:
+    - hosts:
+        - a-art.top
+        - www.a-art.top
+      secretName: nuclear-map-tls
+  rules:
+    - host: a-art.top
+      http:
+        paths:
+          - path: /nuclear-map
+            pathType: Prefix
+            backend:
+              service:
+                name: nuclear-map
+                port:
+                  number: 80
+    - host: www.a-art.top
+      http:
+        paths:
+          - path: /nuclear-map
+            pathType: Prefix
+            backend:
+              service:
+                name: nuclear-map
+                port:
+                  number: 80
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nuclear-map
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nuclear-map
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 10
+          periodSeconds: 60
