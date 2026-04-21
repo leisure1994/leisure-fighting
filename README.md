@@ -64,7 +64,7 @@ skillhub install dining-assistant-skill
 
 如果我的内容/项目对你有帮助，欢迎通过爱发电赞助我，你的支持是我持续创作的最大动力！
 
-👉 [点击前往我的赞助主页](https://afdian.net/a/leisure1994)
+👉 [点击前往我的赞助主页](https://ifdian.net/a/leisure1994)
 
 所有赞助将用于：
 - 持续开发更多实用 Skills
