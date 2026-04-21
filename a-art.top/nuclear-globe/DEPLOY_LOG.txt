@@ -1,1 +1,0 @@
-正在进行部署：将最新版本从 /root/.openclaw/workspace/a-art.top/nuclear-globe/ 复制到 /var/www/html/nuclear-survival-globe/ 目录

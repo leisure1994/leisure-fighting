@@ -6,3 +6,4 @@
 .env.local
 config.json
 !config.example.json
+memory/
