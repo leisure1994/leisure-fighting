@@ -1,14 +1,14 @@
 # 🎯 Leisure Fighting - AI Skills 军火库
 
-> 一人公司，AI 武装。44 个开源 Agent 技能，即装即用。
+> 一人公司，AI 武装。45 个开源 Agent 技能，即装即用。
 
-[![Skills](https://img.shields.io/badge/Skills-44-green)](https://github.com/leisure1994)
+[![Skills](https://img.shields.io/badge/Skills-45-green)](https://github.com/leisure1994)
 [![License](https://img.shields.io/badge/License-MIT-blue)](./LICENSE)
 [![Sponsor](https://img.shields.io/badge/赞助-爱发电-ff69b4)](https://ifdian.net/a/leisure1994)
 
 ---
 
-## 🔥 核心产品（5 个）
+## 🔥 核心产品（6 个）
 
 | 技能 | 一句话描述 | 安装 |
 |------|-----------|------|
@@ -17,6 +17,7 @@
 | **novel-flow-skill** | 小说创作全流程，世界观 + 角色 + 剧情 + 记忆宫殿 | `clawhub install novel-flow-skill` |
 | **wenquxing-skill** | 文曲星写作助手，文风分析与句子重构 | `clawhub install wenquxing-skill` |
 | **nuclear-survival-globe** | 核战争城市自救地球仪，337 城地下避难所可视化 | [在线访问](https://a-art.top/workshop/nuclear-survival-globe/) |
+| **github-repo-watchdog** | GitHub 仓库实时监控，⭐/🐛/🚀 变化秒级推送到飞书 | `clawhub install github-repo-watchdog` |
 
 ## 🏪 双模式行业 Agent（15 个）
 
@@ -44,6 +45,7 @@ npm install -g clawhub
 clawhub install dining-assistant-skill
 clawhub install doubao-connector-skill
 clawhub install json-fixer-skill
+clawhub install github-repo-watchdog
 ```
 
 ## 💖 赞助
