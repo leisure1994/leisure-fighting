@@ -51,6 +51,8 @@ sales/
 MoneyPrinterTurbo/
 a-art-museum/
 hermes_env/
+.openclaw/
+new-skills-dev/
 
 # Workspace runtime files
 a-art-top.md
